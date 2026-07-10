@@ -242,10 +242,72 @@ async function callConfiguredChatProvider({ systemPrompt, userPrompt }) {
 
   return {
     content: content.trim(),
-    reasoning: message?.reasoning_content || "",
     source: useNvidia ? "nvidia_nemotron" : "configured_ai_provider",
     model
   };
+}
+
+function parseStructuredDecision(content) {
+  const normalized = String(content || '')
+    .trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/\s*```$/, '');
+  try {
+    const parsed = JSON.parse(normalized);
+    const allowed = new Set(['interested', 'not_interested', 'pricing_query', 'availability_query', 'unclear']);
+    if (!allowed.has(parsed.intent) || !Number.isFinite(Number(parsed.confidence)) || typeof parsed.rationale !== 'string') return null;
+    return {
+      intent: parsed.intent,
+      confidence: Number(parsed.confidence),
+      rationale: parsed.rationale.slice(0, 500),
+      signals: Array.isArray(parsed.signals) ? parsed.signals.slice(0, 8).map(String) : [],
+      is_ambiguous: Boolean(parsed.is_ambiguous)
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
+async function adjudicateIntent({ message, campaign, deterministic }) {
+  const facts = normalizeCampaignContext({
+    campaignTitle: campaign?.title,
+    campaignBudget: campaign?.budget_pool,
+    deliverables: campaign?.deliverables,
+    launchDate: campaign?.launch_date,
+    productName: campaign?.product_name
+  });
+  const systemPrompt = [
+    'You classify creator outreach replies for an agency CRM.',
+    'Return JSON only. Never include chain-of-thought, hidden reasoning, markdown, or extra keys.',
+    'Allowed intents: interested, not_interested, pricing_query, availability_query, unclear.',
+    'Use unclear for genuinely ambiguous or conflicting messages. Pricing overrides generic enthusiasm when a rate is requested.',
+    'Ground any interpretation in the message and campaign facts.'
+  ].join(' ');
+  const userPrompt = JSON.stringify({
+    message,
+    campaign: facts,
+    deterministic_candidate: {
+      intent: deterministic.intent,
+      confidence: deterministic.confidence,
+      signals: deterministic.signals
+    },
+    response_schema: {
+      intent: 'one allowed intent',
+      confidence: 'number 0 to 1',
+      rationale: 'one concise sentence',
+      signals: ['message signal'],
+      is_ambiguous: false
+    }
+  });
+  try {
+    const providerResult = await callConfiguredChatProvider({ systemPrompt, userPrompt });
+    const decision = parseStructuredDecision(providerResult?.content);
+    if (!decision) return null;
+    return { ...decision, source: providerResult.source, model: providerResult.model };
+  } catch (error) {
+    return null;
+  }
 }
 
 async function generateAgencyReply(input) {
@@ -281,7 +343,7 @@ async function generateAgencyReply(input) {
     if (providerDraft?.content) {
       return {
         draft_reply: providerDraft.content,
-        reasoning: providerDraft.reasoning || `Grounded on ${aiAnswer.question_type} answer with ${(aiAnswer.confidence * 100).toFixed(0)}% answer confidence.`,
+        reasoning: `Grounded on ${aiAnswer.question_type} with ${(aiAnswer.confidence * 100).toFixed(0)}% answer confidence.`,
         source: providerDraft.source,
         model: providerDraft.model,
         ai_answer: aiAnswer
@@ -301,6 +363,7 @@ async function generateAgencyReply(input) {
 }
 
 module.exports = {
+  adjudicateIntent,
   generateAgencyReply,
   buildGroundedAnswer
 };

@@ -64,6 +64,6 @@ Before deploying this classifier into production, three core infrastructure comp
 | Dimension | Minimum Viable Integration (MVI) | Ambitious Enterprise Scale |
 | :--- | :--- | :--- |
 | **Inference Engine** | Deterministic Regex & NLP Rule Engine (`classifier.js`) running inside existing Node.js API container. | Hybrid Router: Rule engine handles 90% unambiguous replies in `<1ms`; edge cases route to fine-tuned **NVIDIA Nemotron 550B LLM**. |
-| **Webhook Ingestion** | Synchronous Express endpoint (`POST /api/v1/webhook/reply`) inserting directly into PostgreSQL. | Asynchronous Kafka/SQS worker pipeline with dead-letter queues and retry backoff. |
+| **Webhook Ingestion** | Synchronous Node HTTP endpoint (`POST /api/v1/webhook/reply`) inserting replies, classifications, generations, and audit events directly into PostgreSQL. | Asynchronous Kafka/SQS worker pipeline with dead-letter queues and retry backoff. |
 | **Human-in-the-Loop** | Account managers manually review items flagged as `unclear` in the CRM queue. | Active Learning Loop (`PATCH /api/v1/replies/:id/override`) automatically logs manager corrections to fine-tune future LLM prompts. |
 | **Automated Actions** | Updates CRM database stage (`Ready to Contract`, `Opted Out`). | Automatically sends personalized rate card PDFs, Cal.com invites, and contract Docusign links via agency email APIs. |

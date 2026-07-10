@@ -45,6 +45,14 @@ let searchTerm = "";
 let selectedMessageId = "rep_101";
 let toastTimer;
 
+function campaignApiId() {
+  return {
+    hardware: "camp_ai_hardware",
+    fintech: "camp_fintech_wallet",
+    gaming: "camp_indie_gaming"
+  }[activeCampaignId] || "camp_ai_hardware";
+}
+
 function escapeHtml(value) {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -55,6 +63,7 @@ function escapeHtml(value) {
 }
 
 function getMessagePrediction(message) {
+  if (message.serverPrediction) return message.serverPrediction;
   const prediction = classifyReplyIntent(message.text);
   if (!message.categoryOverride) return prediction;
 
@@ -404,16 +413,56 @@ function generateDynamicResponse(messageText, intent, creatorHandle, camp) {
 // ============================================================================
 // 5. CLIENT-SIDE CONTROLLER & TAB SWITCHING
 // ============================================================================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   refreshEngineStatus();
   initTabSwitching();
+  await hydrateInboxFromApi();
   renderInboxQueue();
-  selectCreatorMessage("rep_101");
+  selectCreatorMessage(CREATOR_INBOX_QUEUE[0]?.id);
   runBatchClassification();
   initEventListeners();
+  initIntelligenceEvents();
   initWorkspaceMotion();
   playViewEntrance(document.getElementById("view-inbox"));
 });
+
+async function apiRequest(path, options = {}) {
+  const response = await fetch(path, { headers: { "Content-Type": "application/json", ...(options.headers || {}) }, ...options });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "The CRM request failed.");
+  return data;
+}
+
+function storedReplyToInbox(reply) {
+  const handle = reply.creator_handle || "@creator";
+  return {
+    id: reply.id,
+    handle,
+    name: reply.display_name || handle.replace("@", ""),
+    avatar: handle.replace(/[^a-z]/gi, "").slice(0, 2).toUpperCase() || "CR",
+    platform: `${reply.platform} - ${new Date(reply.received_at).toLocaleString()}`,
+    text: reply.raw_message,
+    persisted: true,
+    categoryOverride: null,
+    serverPrediction: {
+      intent: reply.predicted_intent || "unclear",
+      confidence: Number(reply.intent_confidence || 0.72),
+      rationale: reply.intent_rationale || "Stored CRM classification.",
+      signals: [],
+      emotionData: classifyReplyIntent(reply.raw_message).emotionData
+    }
+  };
+}
+
+async function hydrateInboxFromApi() {
+  try {
+    const data = await apiRequest("/api/v1/replies");
+    if (!data.replies?.length) return;
+    CREATOR_INBOX_QUEUE.splice(0, CREATOR_INBOX_QUEUE.length, ...data.replies.map(storedReplyToInbox));
+  } catch (error) {
+    // Keep the embedded demo queue available until PostgreSQL is configured.
+  }
+}
 
 async function refreshEngineStatus() {
   const statusText = document.getElementById("backendStatusText");
@@ -476,6 +525,8 @@ function activateView(viewId, { shouldScroll = true } = {}) {
   });
 
   playViewEntrance(targetView);
+  if (viewId === "view-review") loadReviewQueue();
+  if (viewId === "view-intelligence") loadIntelligence();
   if (shouldScroll) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -680,8 +731,10 @@ async function selectCreatorMessage(msgId) {
     reasoningEl.textContent = `AI reasoning: answering the creator's ${localAnswer.question_type.toLowerCase()} with campaign facts before drafting the response.`;
   }
 
-  // Background backend enrichment via server API (NVIDIA Nemotron LLM or NLP Service)
-  fetchBackgroundAIAnalysis(msg.text, prediction.intent, msg.handle, camp);
+  // Persisted replies have already been classified and audited by the server.
+  if (!msg.persisted) {
+    fetchBackgroundAIAnalysis(msg.text, prediction.intent, msg.handle, camp);
+  }
 }
 
 // ============================================================================
@@ -749,7 +802,7 @@ function initEventListeners() {
       const subEl = document.getElementById("activeCampaignSub");
       if (titleEl) titleEl.textContent = `Active Campaign: ${camp.title}`;
       if (subEl) subEl.textContent = `${camp.subtitle}`;
-      selectCreatorMessage("rep_101");
+      selectCreatorMessage(CREATOR_INBOX_QUEUE[0]?.id);
     });
   }
 
@@ -801,22 +854,29 @@ function initEventListeners() {
   // ANALYZE CUSTOM CREATOR MESSAGE
   const btnAnalyzeCustom = document.getElementById("btnAnalyzeCustom");
   if (btnAnalyzeCustom) {
-    btnAnalyzeCustom.addEventListener("click", () => {
+    btnAnalyzeCustom.addEventListener("click", async () => {
       const textarea = document.getElementById("customMessageText");
       if (!textarea) return;
       const customText = textarea.value.trim();
       if (!customText) return;
 
-      const customId = "custom_" + Date.now().toString().slice(-4);
-      CREATOR_INBOX_QUEUE.unshift({
-        id: customId,
-        handle: "@custom.partner",
-        name: "Custom Partner Creator",
-        avatar: "CP",
-        platform: "Custom Message Sandbox - Just now",
-        text: customText,
-        categoryOverride: null
-      });
+      let message;
+      try {
+        btnAnalyzeCustom.disabled = true;
+        btnAnalyzeCustom.textContent = "Classifying...";
+        const result = await apiRequest("/api/v1/classify", { method: "POST", body: JSON.stringify({ message: customText, creator_handle: "@custom.partner", campaign_id: campaignApiId(), platform: "Custom Message Sandbox" }) });
+        message = {
+          id: result.reply_id, handle: "@custom.partner", name: "Custom Partner Creator", avatar: "CP", platform: "Custom Message Sandbox - Just now", text: customText, persisted: true, categoryOverride: null,
+          serverPrediction: { intent: result.intent, confidence: result.confidence, rationale: result.rationale, signals: result.signals || [], emotionData: classifyReplyIntent(customText).emotionData }
+        };
+      } catch (error) {
+        message = { id: `custom_${Date.now()}`, handle: "@custom.partner", name: "Custom Partner Creator", avatar: "CP", platform: "Offline Sandbox - Just now", text: customText, categoryOverride: null };
+        showToast(error.message);
+      } finally {
+        btnAnalyzeCustom.disabled = false;
+        btnAnalyzeCustom.textContent = "Classify & Draft Tailored Response";
+      }
+      CREATOR_INBOX_QUEUE.unshift(message);
 
       searchTerm = "";
       activeFilter = "all";
@@ -826,7 +886,7 @@ function initEventListeners() {
       });
 
       renderInboxQueue();
-      selectCreatorMessage(customId);
+      selectCreatorMessage(message.id);
 
       setDrawerOpen(false);
 
@@ -836,11 +896,19 @@ function initEventListeners() {
 
   const btnSaveOverride = document.getElementById("btnSaveOverride");
   if (btnSaveOverride) {
-    btnSaveOverride.addEventListener("click", () => {
+    btnSaveOverride.addEventListener("click", async () => {
       const message = CREATOR_INBOX_QUEUE.find(item => item.id === selectedMessageId);
       const override = document.getElementById("overrideIntentSelect")?.value;
       if (!message || !override) return;
       message.categoryOverride = override;
+      if (message.persisted) {
+        try {
+          const result = await apiRequest(`/api/v1/replies/${message.id}/override`, { method: "PATCH", body: JSON.stringify({ corrected_intent: override, rationale: "Inbox manager correction" }) });
+          message.serverPrediction = { ...message.serverPrediction, intent: result.reply.predicted_intent, confidence: 0.99, rationale: result.reply.intent_rationale };
+        } catch (error) {
+          showToast(error.message);
+        }
+      }
       renderInboxQueue();
       selectCreatorMessage(message.id);
       showToast("Human audit override saved and reflected in the inbox.");
@@ -874,9 +942,15 @@ function initEventListeners() {
 
   const btnRunBatchText = document.getElementById("btnRunBatchText");
   if (btnRunBatchText) {
-    btnRunBatchText.addEventListener("click", () => {
+    btnRunBatchText.addEventListener("click", async () => {
       runBatchClassification();
-      showToast("Bulk batch classification completed.");
+      try {
+        const messages = document.getElementById("batchTextarea").value.split("\n").map(line => line.trim()).filter(Boolean);
+        const batch = await apiRequest("/api/v1/batches", { method: "POST", body: JSON.stringify({ messages, campaign_id: campaignApiId(), platform: "Batch workspace" }) });
+        showToast(`Batch persisted: ${batch.results.length} replies processed.`);
+      } catch (error) {
+        showToast(`Batch preview completed. ${error.message}`);
+      }
     });
   }
 
@@ -937,20 +1011,15 @@ async function executeCrmAction(button) {
   button.textContent = "Executing...";
 
   try {
-    const response = await fetch("/api/v1/webhook/reply", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        campaign_id: `camp_${activeCampaignId}`,
-        creator_handle: message.handle,
-        platform: message.platform,
-        message: message.text
-      })
-    });
-    if (!response.ok) throw new Error("CRM action request failed");
-    showToast("CRM action executed and creator reply logged.");
+    if (!message.persisted) {
+      const result = await apiRequest("/api/v1/classify", { method: "POST", body: JSON.stringify({ message: message.text, creator_handle: message.handle, campaign_id: campaignApiId(), platform: message.platform }) });
+      message.id = result.reply_id;
+      message.persisted = true;
+    }
+    await apiRequest(`/api/v1/replies/${message.id}/actions`, { method: "POST", body: JSON.stringify({ action_type: "manager_approved", detail: "Manager approved the proposed reply and simulated CRM action." }) });
+    showToast("CRM approval recorded in the persistent action timeline.");
   } catch (error) {
-    showToast("Demo mode: approval recorded locally. Start the server to persist the CRM action.");
+    showToast(error.message);
   } finally {
     button.disabled = false;
     button.removeAttribute("aria-busy");
@@ -1036,7 +1105,7 @@ function exportBatchAsCsv() {
   URL.revokeObjectURL(url);
 }
 
-function simulateIncomingReply() {
+async function simulateIncomingReply() {
   const samples = [
     "What is the budget if we add usage rights for paid ads?",
     "I am traveling until launch week. Can we publish the week after?",
@@ -1045,16 +1114,14 @@ function simulateIncomingReply() {
     "Can you clarify the exact deliverables and exclusivity terms?"
   ];
   const text = samples[Math.floor(Math.random() * samples.length)];
-  const customId = "sim_" + Date.now().toString().slice(-5);
-  CREATOR_INBOX_QUEUE.unshift({
-    id: customId,
-    handle: "@new.creator",
-    name: "New Creator",
-    avatar: "NC",
-    platform: "Webhook Simulation - Just now",
-    text,
-    categoryOverride: null
-  });
+  let message = { id: `sim_${Date.now()}`, handle: "@new.creator", name: "New Creator", avatar: "NC", platform: "Webhook Simulation - Just now", text, categoryOverride: null };
+  try {
+    const result = await apiRequest("/api/v1/webhook/reply", { method: "POST", body: JSON.stringify({ message: text, creator_handle: "@new.creator", campaign_id: campaignApiId(), platform: "Webhook Simulation" }) });
+    message = { ...message, id: result.reply_id, persisted: true, serverPrediction: { intent: result.intent, confidence: result.confidence, rationale: result.rationale, signals: result.signals || [], emotionData: classifyReplyIntent(text).emotionData } };
+  } catch (error) {
+    showToast(error.message);
+  }
+  CREATOR_INBOX_QUEUE.unshift(message);
   activeFilter = "all";
   searchTerm = "";
   const searchInput = document.getElementById("inboxSearchInput");
@@ -1063,7 +1130,7 @@ function simulateIncomingReply() {
     c.classList.toggle("active", c.getAttribute("data-filter") === "all");
   });
   renderInboxQueue();
-  selectCreatorMessage(customId);
+  selectCreatorMessage(message.id);
   showToast("Simulated incoming reply classified and routed.");
 }
 
@@ -1088,4 +1155,96 @@ function showToast(msg) {
   toastTimer = window.setTimeout(() => {
     toast.classList.remove("is-visible");
   }, 3200);
+}
+
+function intentLabel(intent) {
+  return String(intent || "unclear").replace(/_/g, " ").replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
+async function loadReviewQueue() {
+  const body = document.getElementById("reviewQueueBody");
+  const summary = document.getElementById("reviewSummary");
+  if (!body || !summary) return;
+  summary.innerHTML = '<div class="review-stat"><span>Loading</span><strong>Review queue</strong></div>';
+  try {
+    const data = await apiRequest("/api/v1/review-queue");
+    summary.innerHTML = `<div class="review-stat"><span>Needs review</span><strong>${data.count}</strong></div><div class="review-stat"><span>Policy</span><strong>Human approval</strong></div>`;
+    body.innerHTML = data.replies.map(reply => `
+      <tr>
+        <td><strong>${escapeHtml(reply.creator_handle)}</strong><br><span class="time-label">${escapeHtml(reply.platform)}</span></td>
+        <td>${escapeHtml(reply.raw_message)}</td>
+        <td>${escapeHtml(intentLabel(reply.predicted_intent))}</td>
+        <td>${Math.round(Number(reply.intent_confidence || 0) * 100)}%</td>
+        <td><div class="review-action"><select data-review-select="${reply.id}">${["interested", "pricing_query", "availability_query", "not_interested", "unclear"].map(intent => `<option value="${intent}"${intent === reply.predicted_intent ? " selected" : ""}>${escapeHtml(intentLabel(intent))}</option>`).join("")}</select><button type="button" class="btn-secondary" data-review-save="${reply.id}">Save</button><button type="button" class="btn-secondary" data-timeline="${reply.id}">Timeline</button></div></td>
+      </tr>`).join("") || '<tr><td colspan="5">No replies need manager review.</td></tr>';
+  } catch (error) {
+    summary.textContent = error.message;
+  }
+}
+
+async function loadTimeline(replyId) {
+  const target = document.getElementById("replyTimeline");
+  if (!target) return;
+  target.textContent = "Loading reply history...";
+  try {
+    const data = await apiRequest(`/api/v1/replies/${replyId}/timeline`);
+    target.innerHTML = data.timeline.map(event => `<div class="timeline-event"><strong>${escapeHtml(event.type)}: ${escapeHtml(event.title)}</strong><span>${escapeHtml(event.detail || "")} - ${new Date(event.created_at).toLocaleString()}</span></div>`).join("") || "No timeline events are available.";
+  } catch (error) {
+    target.textContent = error.message;
+  }
+}
+
+async function loadIntelligence() {
+  const analytics = document.getElementById("analyticsGrid");
+  const knowledge = document.getElementById("knowledgeList");
+  if (!analytics || !knowledge) return;
+  analytics.innerHTML = '<div class="analytics-stat"><span>Loading</span><strong>CRM data</strong></div>';
+  try {
+    const [metrics, knowledgeData] = await Promise.all([
+      apiRequest("/api/v1/analytics"),
+      apiRequest(`/api/v1/campaigns/${campaignApiId()}/knowledge`)
+    ]);
+    const summary = metrics.summary || {};
+    analytics.innerHTML = [["Replies stored", summary.total_replies || 0], ["Average confidence", `${Math.round(Number(summary.average_confidence || 0) * 100)}%`], ["Review queue", summary.review_queue_count || 0], ["Human overrides", metrics.override_count || 0]].map(([label, value]) => `<div class="analytics-stat"><span>${label}</span><strong>${value}</strong></div>`).join("");
+    knowledge.innerHTML = knowledgeData.knowledge.map(item => `<article class="knowledge-item"><strong>${escapeHtml(item.label)}</strong><p>${escapeHtml(item.content)}</p></article>`).join("") || "<p>No campaign knowledge has been added.</p>";
+  } catch (error) {
+    analytics.textContent = error.message;
+    knowledge.textContent = "Campaign intelligence is unavailable until PostgreSQL is reachable.";
+  }
+}
+
+function initIntelligenceEvents() {
+  document.getElementById("reviewQueueBody")?.addEventListener("click", async event => {
+    const timelineButton = event.target.closest("[data-timeline]");
+    const saveButton = event.target.closest("[data-review-save]");
+    if (timelineButton) return loadTimeline(timelineButton.dataset.timeline);
+    if (!saveButton) return;
+    const replyId = saveButton.dataset.reviewSave;
+    const select = document.querySelector(`[data-review-select="${replyId}"]`);
+    try {
+      saveButton.disabled = true;
+      await apiRequest(`/api/v1/replies/${replyId}/override`, { method: "PATCH", body: JSON.stringify({ corrected_intent: select.value, rationale: "Reviewed in AURA CRM" }) });
+      showToast("Human review saved and added to the learning audit.");
+      loadReviewQueue();
+      loadIntelligence();
+    } catch (error) {
+      showToast(error.message);
+    } finally {
+      saveButton.disabled = false;
+    }
+  });
+  document.getElementById("knowledgeForm")?.addEventListener("submit", async event => {
+    event.preventDefault();
+    const label = document.getElementById("knowledgeLabel");
+    const content = document.getElementById("knowledgeContent");
+    const type = document.getElementById("knowledgeType");
+    try {
+      await apiRequest(`/api/v1/campaigns/${campaignApiId()}/knowledge`, { method: "POST", body: JSON.stringify({ knowledge_type: type.value, label: label.value.trim(), content: content.value.trim() }) });
+      event.target.reset();
+      showToast("Campaign fact added to the grounded answer engine.");
+      loadIntelligence();
+    } catch (error) {
+      showToast(error.message);
+    }
+  });
 }

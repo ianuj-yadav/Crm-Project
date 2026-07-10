@@ -21,6 +21,8 @@
     <!-- Navigation Tabs -->
     <nav class="nav-tabs" role="tablist" aria-label="AURA CRM workspaces">
       <button class="nav-tab active" id="tab-inbox" type="button" role="tab" aria-selected="true" aria-controls="view-inbox" tabindex="0" data-view="view-inbox">Live Inbox & AI Answers</button>
+      <button class="nav-tab" id="tab-review" type="button" role="tab" aria-selected="false" aria-controls="view-review" tabindex="-1" data-view="view-review">Human Review Queue</button>
+      <button class="nav-tab" id="tab-intelligence" type="button" role="tab" aria-selected="false" aria-controls="view-intelligence" tabindex="-1" data-view="view-intelligence">Campaign Intelligence</button>
       <button class="nav-tab" id="tab-batch" type="button" role="tab" aria-selected="false" aria-controls="view-batch" tabindex="-1" data-view="view-batch">Bulk Batch & Export</button>
       <button class="nav-tab" id="tab-eval" type="button" role="tab" aria-selected="false" aria-controls="view-eval" tabindex="-1" data-view="view-eval">Benchmark & Error Analysis</button>
       <button class="nav-tab" id="tab-arch" type="button" role="tab" aria-selected="false" aria-controls="view-arch" tabindex="-1" data-view="view-arch">Production Architecture</button>
@@ -253,6 +255,54 @@
 
       </main>
 
+    </div>
+  </section>
+
+  <section id="view-review" class="view-container" role="tabpanel" aria-labelledby="tab-review" hidden>
+    <div class="content-wrapper">
+      <div class="page-header">
+        <h2>Human Review Queue</h2>
+        <p>Replies that need a manager decision before automation can continue.</p>
+      </div>
+      <div class="review-summary" id="reviewSummary" aria-live="polite"></div>
+      <div class="data-table-container">
+        <table class="data-table">
+          <thead><tr><th>Creator</th><th>Reply</th><th>AI Decision</th><th>Confidence</th><th>Review</th></tr></thead>
+          <tbody id="reviewQueueBody"></tbody>
+        </table>
+      </div>
+      <section class="prose-card timeline-panel" aria-labelledby="timelineHeading">
+        <h3 id="timelineHeading">Reply Timeline</h3>
+        <div id="replyTimeline" class="timeline-list">Select a reply to inspect classification, draft, and action events.</div>
+      </section>
+    </div>
+  </section>
+
+  <section id="view-intelligence" class="view-container" role="tabpanel" aria-labelledby="tab-intelligence" hidden>
+    <div class="content-wrapper">
+      <div class="page-header">
+        <h2>Campaign Intelligence</h2>
+        <p>Ground the reply engine in campaign facts and monitor decision quality.</p>
+      </div>
+      <div class="analytics-grid" id="analyticsGrid" aria-live="polite"></div>
+      <div class="intelligence-grid">
+        <section class="prose-card">
+          <h3>Campaign Knowledge</h3>
+          <div id="knowledgeList" class="knowledge-list"></div>
+        </section>
+        <section class="prose-card">
+          <h3>Add Grounding Fact</h3>
+          <form id="knowledgeForm" class="knowledge-form">
+            <label for="knowledgeType">Fact type</label>
+            <select id="knowledgeType"><option value="budget">Budget</option><option value="timeline">Timeline</option><option value="deliverables">Deliverables</option><option value="eligibility">Eligibility</option><option value="usage_rights">Usage rights</option><option value="assets">Response asset</option></select>
+            <label for="knowledgeLabel">Label</label>
+            <input id="knowledgeLabel" required maxlength="80" placeholder="Example: Paid usage rights" />
+            <label for="knowledgeContent">Grounding fact</label>
+            <textarea id="knowledgeContent" required maxlength="800" placeholder="Write the approved campaign fact for the answer engine."></textarea>
+            <button class="btn-primary" type="submit">Add Campaign Fact</button>
+          </form>
+        </section>
+      </div>
     </div>
   </section>
 

@@ -1236,6 +1236,120 @@ input:focus-visible {
   margin-bottom: 0.75rem;
 }
 
+.review-summary,
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.review-stat,
+.analytics-stat {
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+}
+
+.review-stat span,
+.analytics-stat span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.review-stat strong,
+.analytics-stat strong {
+  display: block;
+  color: var(--text-main);
+  font-size: 22px;
+  margin-top: 0.25rem;
+}
+
+.review-action {
+  display: flex;
+  gap: 0.5rem;
+  min-width: 210px;
+}
+
+.review-action select {
+  flex: 1;
+  min-width: 0;
+}
+
+.timeline-list,
+.knowledge-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.timeline-event,
+.knowledge-item {
+  border-left: 3px solid var(--accent-primary);
+  background: var(--bg-subtle);
+  padding: 0.75rem 0.85rem;
+}
+
+.timeline-event strong,
+.knowledge-item strong {
+  display: block;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.timeline-event span,
+.knowledge-item p {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.intelligence-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.9fr;
+  gap: 1.2rem;
+}
+
+.knowledge-form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.knowledge-form label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.knowledge-form input,
+.knowledge-form select,
+.knowledge-form textarea {
+  width: 100%;
+  border: 1px solid var(--border-medium);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--text-main);
+  min-height: 40px;
+  padding: 0.65rem 0.75rem;
+}
+
+.knowledge-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.knowledge-form .btn-primary {
+  justify-self: start;
+  margin-top: 0.35rem;
+}
+
 .arch-diagram {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11.5px;
@@ -1282,6 +1396,9 @@ input:focus-visible {
   }
   .challenge-status-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .intelligence-grid {
+    grid-template-columns: 1fr;
   }
 }
 

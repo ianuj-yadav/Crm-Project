@@ -7,7 +7,10 @@
     "start": "node server.js",
     "dev": "node server.js",
     "seed": "node src/database/seed.js",
-    "test": "node test_classifier.js && node evaluate.js"
+    "test": "node test_classifier.js && node evaluate.js",
+    "migrate": "node src/database/migrate.js",
+    "import-legacy": "node src/database/importLegacy.js",
+    "test:db": "node test_database.js"
   },
   "keywords": [
     "crm",
@@ -19,8 +22,6 @@
   "author": "AURA AI CRM Team",
   "license": "MIT",
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "sqlite3": "^5.1.7"
+    "pg": "^8.22.0"
   }
 }
