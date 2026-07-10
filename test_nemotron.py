@@ -27,7 +27,7 @@ MODEL_NAME = "nvidia/nemotron-3-ultra-550b-a55b"
 
 def run_nemotron_test(message_text, campaign_name="AI Hardware Launch", budget="$25,000"):
     print("===================================================================")
-    print(f"⚡ TESTING NVIDIA NEMOTRON ENGINE ({MODEL_NAME})")
+    print(f"TESTING NVIDIA NEMOTRON ENGINE ({MODEL_NAME})")
     print("===================================================================")
     print(f"Creator Input : \"{message_text}\"")
     print(f"Campaign      : {campaign_name} (Budget Pool: {budget})\n")

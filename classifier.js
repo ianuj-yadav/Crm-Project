@@ -13,7 +13,7 @@ function detectCreatorEmotion(text, lower, words) {
 
   if (enthusiasticCount >= 2 || lower.includes("omg") || lower.includes("love the brand") || lower.includes("so down")) {
     return {
-      emotion: "Enthusiastic & Excited 🚀",
+      emotion: "Enthusiastic & Excited",
       sentiment: "Highly Positive",
       intensity: 95,
       badgeClass: "emotion-enthusiastic",
@@ -27,7 +27,7 @@ function detectCreatorEmotion(text, lower, words) {
 
   if (urgentCount >= 1 || lower.includes("traveling until") || lower.includes("by friday")) {
     return {
-      emotion: "Urgent & Time-Sensitive ⚡",
+      emotion: "Urgent & Time-Sensitive",
       sentiment: "Action-Driven",
       intensity: 88,
       badgeClass: "emotion-urgent",
@@ -41,7 +41,7 @@ function detectCreatorEmotion(text, lower, words) {
 
   if (analyticalCount >= 1 || lower.includes("cpm") || lower.includes("compensation")) {
     return {
-      emotion: "Professional & Diligent 💼",
+      emotion: "Professional & Diligent",
       sentiment: "Business-Focused",
       intensity: 90,
       badgeClass: "emotion-professional",
@@ -53,7 +53,7 @@ function detectCreatorEmotion(text, lower, words) {
   const cautiousCues = ["check with", "management team", "get back to you", "maybe", "not sure"];
   if (cautiousCues.some(c => lower.includes(c))) {
     return {
-      emotion: "Cautious & Consultative 🤔",
+      emotion: "Cautious & Consultative",
       sentiment: "Deliberative",
       intensity: 74,
       badgeClass: "emotion-cautious",
@@ -65,7 +65,7 @@ function detectCreatorEmotion(text, lower, words) {
   const politePassCues = ["thank you", "not taking on", "unfortunately", "passing for now", "keep me in mind", "please remove", "can't collaborate", "cant collaborate", "cannot collaborate", "not collaborate", "not a fit"];
   if (politePassCues.some(c => lower.includes(c))) {
     return {
-      emotion: "Polite & Respectful 🕊️",
+      emotion: "Polite & Respectful",
       sentiment: "Graceful Opt-Out",
       intensity: 82,
       badgeClass: "emotion-polite",
@@ -75,7 +75,7 @@ function detectCreatorEmotion(text, lower, words) {
 
   // Default
   return {
-    emotion: "Balanced & Professional ✨",
+    emotion: "Balanced & Professional",
     sentiment: "Neutral Professional",
     intensity: 80,
     badgeClass: "emotion-professional",

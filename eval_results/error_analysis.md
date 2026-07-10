@@ -1,6 +1,6 @@
 # AURA // Reply-Intent Classifier Error Analysis & Evaluation Report
 
-**Evaluation Date:** 2026-07-09  
+**Evaluation Date:** 2026-07-10  
 **Dataset Size:** 60 Realistic Creator Replies (48 Train / 12 Held-Out Test Set)  
 **Architecture:** Hybrid Rule-Precedence NLP + Semantic Lexicon Classifier (`classifier.js`)
 

@@ -19,11 +19,11 @@
     </div>
 
     <!-- Navigation Tabs -->
-    <nav class="nav-tabs">
-      <button class="nav-tab active" data-view="view-inbox">Live Inbox & AI Answers</button>
-      <button class="nav-tab" data-view="view-batch">Bulk Batch & Export</button>
-      <button class="nav-tab" data-view="view-eval">Benchmark & Error Analysis</button>
-      <button class="nav-tab" data-view="view-arch">Production Architecture</button>
+    <nav class="nav-tabs" role="tablist" aria-label="AURA CRM workspaces">
+      <button class="nav-tab active" id="tab-inbox" type="button" role="tab" aria-selected="true" aria-controls="view-inbox" tabindex="0" data-view="view-inbox">Live Inbox & AI Answers</button>
+      <button class="nav-tab" id="tab-batch" type="button" role="tab" aria-selected="false" aria-controls="view-batch" tabindex="-1" data-view="view-batch">Bulk Batch & Export</button>
+      <button class="nav-tab" id="tab-eval" type="button" role="tab" aria-selected="false" aria-controls="view-eval" tabindex="-1" data-view="view-eval">Benchmark & Error Analysis</button>
+      <button class="nav-tab" id="tab-arch" type="button" role="tab" aria-selected="false" aria-controls="view-arch" tabindex="-1" data-view="view-arch">Production Architecture</button>
     </nav>
 
     <div class="header-right">
@@ -42,12 +42,12 @@
   </header>
 
   <!-- Toast Notification -->
-  <div id="toastNotification" class="toast-notice">Incoming message classified and actioned.</div>
+  <div id="toastNotification" class="toast-notice" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <!-- ========================================================================
        VIEW 1: LIVE INBOX & RESPONSE WORKSPACE
        ======================================================================== -->
-  <section id="view-inbox" class="view-container active">
+  <section id="view-inbox" class="view-container active" role="tabpanel" aria-labelledby="tab-inbox">
     <div class="split-workspace">
       
       <!-- Left Sidebar: Creator Inbox Queue -->
@@ -59,7 +59,8 @@
           </div>
 
           <div class="search-input-wrap">
-            <input type="text" id="inboxSearchInput" class="search-input" placeholder="Search handles or keywords..." />
+            <label class="sr-only" for="inboxSearchInput">Search creator replies</label>
+            <input type="search" id="inboxSearchInput" class="search-input" placeholder="Search handles or keywords..." />
           </div>
 
           <div class="filter-chips" id="filterChipContainer">
@@ -88,7 +89,7 @@
             <p id="activeCampaignSub">Target Deliverables: 1x Dedicated YouTube Review (10m+) + 2x IG Reels | Budget Pool: $25,000</p>
           </div>
           <div style="display: flex; gap: 8px;">
-            <button class="btn-secondary" id="btnToggleCustomBox">+ Custom Message Sandbox</button>
+            <button class="btn-secondary" id="btnToggleCustomBox" type="button" aria-expanded="false" aria-controls="customSlideDrawer">Custom Message Sandbox</button>
             <button class="btn-primary" id="btnClassifyAll18">Batch Classify All</button>
           </div>
         </div>
@@ -113,13 +114,15 @@
         </div>
 
         <!-- Smooth Collapsible Side Slide Drawer for Custom Sandbox Input -->
-        <div class="custom-slide-drawer" id="customSlideDrawer">
-          <label for="customMessageText">Sandbox Testing - Type Any Custom Creator Reply</label>
+        <div class="custom-slide-drawer" id="customSlideDrawer" role="region" aria-labelledby="customMessageLabel" hidden>
+          <div class="custom-slide-drawer-inner">
+            <label id="customMessageLabel" for="customMessageText">Sandbox Testing - Type Any Custom Creator Reply</label>
           <textarea id="customMessageText" placeholder="Try: 'What is the budget for one dedicated video?' or 'sorry, we cant collaborate right now'"></textarea>
           <div style="display: flex; justify-content: flex-end; gap: 8px;">
             <button class="btn-secondary" id="btnCloseSlideDrawer">Close</button>
             <button class="btn-primary" id="btnAnalyzeCustom">Classify & Draft Tailored Response</button>
           </div>
+        </div>
         </div>
 
         <!-- Active Message Reader Card -->
@@ -151,7 +154,7 @@
 
             <!-- Animated Visual Confidence Bar -->
             <div class="confidence-meter-track">
-              <div class="confidence-meter-fill" id="readerConfidenceBar" style="width: 94%;"></div>
+              <div class="confidence-meter-fill" id="readerConfidenceBar" role="progressbar" aria-label="Intent confidence" aria-valuemin="0" aria-valuemax="100" aria-valuenow="94" style="width: 94%;"></div>
             </div>
 
             <p class="rationale-body" id="readerRationale">
@@ -182,7 +185,7 @@
 
             <!-- Animated Visual Sentiment Intensity Bar -->
             <div class="confidence-meter-track">
-              <div class="confidence-meter-fill emotion-meter-fill" id="readerEmotionBar" style="width: 95%;"></div>
+              <div class="confidence-meter-fill emotion-meter-fill" id="readerEmotionBar" role="progressbar" aria-label="Tone intensity" aria-valuemin="0" aria-valuemax="100" aria-valuenow="95" style="width: 95%;"></div>
             </div>
 
             <p class="rationale-body" id="readerEmotionRationale">
@@ -203,7 +206,7 @@
               <span class="confidence-score" id="readerAnswerConfidence">94% Confidence</span>
             </div>
             <div class="confidence-meter-track">
-              <div class="confidence-meter-fill answer-meter-fill" id="readerAnswerConfidenceBar" style="width: 94%;"></div>
+              <div class="confidence-meter-fill answer-meter-fill" id="readerAnswerConfidenceBar" role="progressbar" aria-label="Answer confidence" aria-valuemin="0" aria-valuemax="100" aria-valuenow="94" style="width: 94%;"></div>
             </div>
             <p class="rationale-body" id="readerAiAnswer">
               The campaign budget pool is $25,000 for the requested creator scope.
@@ -256,7 +259,7 @@
   <!-- ========================================================================
        VIEW 2: BULK BATCH CLASSIFICATION & EXPORT SANDBOX
        ======================================================================== -->
-  <section id="view-batch" class="view-container">
+  <section id="view-batch" class="view-container" role="tabpanel" aria-labelledby="tab-batch" hidden>
     <div class="content-wrapper">
       <div class="page-header">
         <h2>Bulk Batch Classification & CRM Export</h2>
@@ -299,7 +302,7 @@ Let me check with my management team and get back to you next week.</textarea>
   <!-- ========================================================================
        VIEW 3: HELD-OUT BENCHMARK EVALUATION & ERROR ANALYSIS SUITE
        ======================================================================== -->
-  <section id="view-eval" class="view-container">
+  <section id="view-eval" class="view-container" role="tabpanel" aria-labelledby="tab-eval" hidden>
     <div class="content-wrapper">
       <div class="page-header">
         <h2>AI/ML Challenge Option B - Hold-Out Benchmark & Error Analysis</h2>
@@ -418,7 +421,7 @@ Let me check with my management team and get back to you next week.</textarea>
   <!-- ========================================================================
        VIEW 4: PRODUCTION INTEGRATION ARCHITECTURE (OPTION B HALF-PAGE REQUIREMENT)
        ======================================================================== -->
-  <section id="view-arch" class="view-container">
+  <section id="view-arch" class="view-container" role="tabpanel" aria-labelledby="tab-arch" hidden>
     <div class="content-wrapper">
       <div class="page-header">
         <h2>Half-Page Systems Integration Blueprint</h2>

@@ -65,7 +65,7 @@
     "true_intent": "interested",
     "predicted_intent": "interested",
     "confidence": 0.99,
-    "rationale": "Strong willingness to proceed or execute agreement detected (send me more details, sounds amazing). Reinforced by Enthusiastic & Excited 🚀 emotional profile.",
+    "rationale": "Strong willingness to proceed or execute agreement detected (send me more details, sounds amazing). Reinforced by Enthusiastic & Excited emotional profile.",
     "correct": true,
     "split": "test",
     "platform": "Instagram DM",

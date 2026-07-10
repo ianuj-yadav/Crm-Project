@@ -43,6 +43,29 @@ let activeCampaignId = "hardware";
 let activeFilter = "all";
 let searchTerm = "";
 let selectedMessageId = "rep_101";
+let toastTimer;
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function getMessagePrediction(message) {
+  const prediction = classifyReplyIntent(message.text);
+  if (!message.categoryOverride) return prediction;
+
+  return {
+    ...prediction,
+    intent: message.categoryOverride,
+    confidence: 0.99,
+    rationale: "Human audit override applied to this creator reply.",
+    signals: ["human_audit_override", ...(prediction.signals || [])]
+  };
+}
 
 // ============================================================================
 // 2. AGENCY CREATOR REPLY INBOX QUEUE
@@ -322,12 +345,23 @@ function renderAiAnswer(answer) {
 
   if (typeEl) typeEl.textContent = answer.question_type || "AI Answer";
   if (confidenceEl) confidenceEl.textContent = `${confidence}% Confidence`;
-  if (barEl) barEl.style.width = `${confidence}%`;
+  animateMeter(barEl, confidence);
   if (answerEl) answerEl.textContent = answer.answer || "No answer generated.";
   if (evidenceEl) {
     const evidence = Array.isArray(answer.evidence) ? answer.evidence.join(" | ") : "Campaign facts and message wording.";
     evidenceEl.textContent = `Evidence: ${evidence} Next step: ${answer.suggested_next_step || "Review and reply."}`;
   }
+}
+
+function animateMeter(element, value) {
+  if (!element) return;
+  element.style.width = "0%";
+  element.setAttribute("aria-valuenow", String(value));
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      element.style.width = `${value}%`;
+    });
+  });
 }
 
 // ============================================================================
@@ -377,6 +411,8 @@ document.addEventListener("DOMContentLoaded", () => {
   selectCreatorMessage("rep_101");
   runBatchClassification();
   initEventListeners();
+  initWorkspaceMotion();
+  playViewEntrance(document.getElementById("view-inbox"));
 });
 
 async function refreshEngineStatus() {
@@ -396,20 +432,70 @@ async function refreshEngineStatus() {
 
 function initTabSwitching() {
   const tabButtons = document.querySelectorAll(".nav-tab");
-  const viewContainers = document.querySelectorAll(".view-container");
 
   tabButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-      tabButtons.forEach(b => b.classList.remove("active"));
-      viewContainers.forEach(v => v.classList.remove("active"));
-
-      btn.classList.add("active");
-      const targetViewId = btn.getAttribute("data-view");
-      const targetEl = document.getElementById(targetViewId);
-      if (targetEl) {
-        targetEl.classList.add("active");
-      }
+      activateView(btn.getAttribute("data-view"));
     });
+
+    btn.addEventListener("keydown", (event) => {
+      const tabs = Array.from(document.querySelectorAll(".nav-tab"));
+      const currentIndex = tabs.indexOf(btn);
+      let nextIndex = null;
+
+      if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % tabs.length;
+      if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = tabs.length - 1;
+      if (nextIndex === null) return;
+
+      event.preventDefault();
+      const nextTab = tabs[nextIndex];
+      nextTab.focus();
+      activateView(nextTab.getAttribute("data-view"), { shouldScroll: false });
+    });
+  });
+}
+
+function activateView(viewId, { shouldScroll = true } = {}) {
+  if (!viewId) return;
+  const targetView = document.getElementById(viewId);
+  if (!targetView) return;
+
+  document.querySelectorAll(".nav-tab").forEach(tab => {
+    const isActive = tab.getAttribute("data-view") === viewId;
+    tab.classList.toggle("active", isActive);
+    tab.setAttribute("aria-selected", String(isActive));
+    tab.tabIndex = isActive ? 0 : -1;
+  });
+
+  document.querySelectorAll(".view-container").forEach(view => {
+    const isActive = view.id === viewId;
+    view.classList.toggle("active", isActive);
+    view.hidden = !isActive;
+  });
+
+  playViewEntrance(targetView);
+  if (shouldScroll) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+function initWorkspaceMotion() {
+  document.querySelectorAll(
+    ".campaign-header-card, .challenge-status-grid, .reader-box, .analysis-cards-row, .crm-action-strip, .llm-card, .content-wrapper"
+  ).forEach(element => element.classList.add("motion-item"));
+}
+
+function playViewEntrance(view) {
+  if (!view || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const items = view.querySelectorAll(".motion-item");
+  items.forEach((item, index) => {
+    item.classList.remove("motion-visible");
+    item.style.setProperty("--motion-delay", `${Math.min(index * 55, 260)}ms`);
+  });
+  requestAnimationFrame(() => {
+    items.forEach(item => item.classList.add("motion-visible"));
   });
 }
 
@@ -423,7 +509,7 @@ function renderInboxQueue() {
   const countHeader = document.getElementById("inboxCountHeader");
 
   const filtered = CREATOR_INBOX_QUEUE.filter(item => {
-    const prediction = classifyReplyIntent(item.text);
+    const prediction = getMessagePrediction(item);
     const intentMatch = activeFilter === "all" || prediction.intent === activeFilter;
     const searchMatch = !searchTerm ||
       item.handle.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -439,27 +525,34 @@ function renderInboxQueue() {
   scrollArea.innerHTML = "";
 
   filtered.forEach(item => {
-    const prediction = classifyReplyIntent(item.text);
+    const prediction = getMessagePrediction(item);
     const meta = getAutomatedCrmMetadata(prediction.intent, prediction.confidence);
     const confPercent = Math.round(prediction.confidence * 100);
 
-    const cardEl = document.createElement("div");
+    const cardEl = document.createElement("button");
+    cardEl.type = "button";
     cardEl.className = `inbox-card${item.id === selectedMessageId ? " selected" : ""}`;
     cardEl.setAttribute("data-id", item.id);
+    cardEl.setAttribute("aria-pressed", String(item.id === selectedMessageId));
+    cardEl.setAttribute("aria-label", `${item.handle}, ${meta.label}, ${confPercent}% confidence`);
 
     cardEl.innerHTML = `
       <div class="card-header-line">
-        <span class="handle-name">${item.handle}</span>
-        <span class="time-label">${item.avatar}</span>
+        <span class="handle-name">${escapeHtml(item.handle)}</span>
+        <span class="time-label">${escapeHtml(item.avatar)}</span>
       </div>
-      <div class="platform-sub">${item.platform}</div>
-      <div class="message-snippet">${item.text}</div>
+      <div class="platform-sub">${escapeHtml(item.platform)}</div>
+      <div class="message-snippet">${escapeHtml(item.text)}</div>
       <span class="intent-pill ${meta.badgeClass}">${meta.label} (${confPercent}%)</span>
     `;
 
     cardEl.addEventListener("click", () => {
-      document.querySelectorAll(".inbox-card").forEach(c => c.classList.remove("selected"));
+      document.querySelectorAll(".inbox-card").forEach(c => {
+        c.classList.remove("selected");
+        c.setAttribute("aria-pressed", "false");
+      });
       cardEl.classList.add("selected");
+      cardEl.setAttribute("aria-pressed", "true");
       selectCreatorMessage(item.id);
     });
 
@@ -476,7 +569,7 @@ async function selectCreatorMessage(msgId) {
   selectedMessageId = msgId;
 
   const camp = CAMPAIGN_CATALOG[activeCampaignId] || CAMPAIGN_CATALOG.hardware;
-  const prediction = classifyReplyIntent(msg.text);
+  const prediction = getMessagePrediction(msg);
   const meta = getAutomatedCrmMetadata(prediction.intent, prediction.confidence);
   const localAnswer = getLocalAiAnswer(msg.text, prediction.intent, camp);
 
@@ -536,9 +629,7 @@ async function selectCreatorMessage(msgId) {
   if (confEl) {
     confEl.textContent = `${confPercent}% Confidence`;
   }
-  if (confBarEl) {
-    confBarEl.style.width = `${confPercent}%`;
-  }
+  animateMeter(confBarEl, confPercent);
 
   const signalsList = Array.isArray(prediction.signals) && prediction.signals.length > 0
     ? prediction.signals.join(", ")
@@ -550,7 +641,7 @@ async function selectCreatorMessage(msgId) {
 
   // Populate Emotion & Tone UI Card
   const em = prediction.emotionData || {
-    emotion: "Balanced & Professional ✨",
+    emotion: "Balanced & Professional",
     sentiment: "Neutral Professional",
     intensity: 80,
     badgeClass: "emotion-professional",
@@ -564,9 +655,7 @@ async function selectCreatorMessage(msgId) {
   if (emotionScoreEl) {
     emotionScoreEl.textContent = `${em.intensity}% Intensity`;
   }
-  if (emotionBarEl) {
-    emotionBarEl.style.width = `${em.intensity}%`;
-  }
+  animateMeter(emotionBarEl, em.intensity);
   if (emotionRationaleEl) {
     emotionRationaleEl.textContent = em.toneRationale;
   }
@@ -638,7 +727,7 @@ async function fetchBackgroundAIAnalysis(messageText, intent, creatorHandle, cam
       return;
     }
   } catch (err) {
-    // API server not reachable or static environment — fallback seamlessly
+    // API server not reachable or static environment - fallback seamlessly.
   }
 
   // Ensure high-quality AI rationale is displayed even in local file/offline mode
@@ -684,25 +773,30 @@ function initEventListeners() {
     });
   }
 
-  // ACCORDION SLIDE DRAWER TOGGLE
+  // Accessible sandbox disclosure with a natural page-level slide.
   const btnToggleCustomBox = document.getElementById("btnToggleCustomBox");
   const btnCloseSlideDrawer = document.getElementById("btnCloseSlideDrawer");
   const slideDrawer = document.getElementById("customSlideDrawer");
 
   if (btnToggleCustomBox && slideDrawer) {
     btnToggleCustomBox.addEventListener("click", () => {
-      slideDrawer.classList.toggle("open");
-      if (slideDrawer.classList.contains("open")) {
-        document.getElementById("customMessageText")?.focus();
-      }
+      setDrawerOpen(!slideDrawer.classList.contains("open"));
     });
   }
 
   if (btnCloseSlideDrawer && slideDrawer) {
     btnCloseSlideDrawer.addEventListener("click", () => {
-      slideDrawer.classList.remove("open");
+      setDrawerOpen(false);
+      btnToggleCustomBox?.focus();
     });
   }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && slideDrawer?.classList.contains("open")) {
+      setDrawerOpen(false);
+      btnToggleCustomBox?.focus();
+    }
+  });
 
   // ANALYZE CUSTOM CREATOR MESSAGE
   const btnAnalyzeCustom = document.getElementById("btnAnalyzeCustom");
@@ -734,9 +828,7 @@ function initEventListeners() {
       renderInboxQueue();
       selectCreatorMessage(customId);
 
-      if (slideDrawer) {
-        slideDrawer.classList.remove("open");
-      }
+      setDrawerOpen(false);
 
       showToast("Custom creator reply classified and AI response generated.");
     });
@@ -745,28 +837,38 @@ function initEventListeners() {
   const btnSaveOverride = document.getElementById("btnSaveOverride");
   if (btnSaveOverride) {
     btnSaveOverride.addEventListener("click", () => {
-      showToast("Active learning audit override saved.");
+      const message = CREATOR_INBOX_QUEUE.find(item => item.id === selectedMessageId);
+      const override = document.getElementById("overrideIntentSelect")?.value;
+      if (!message || !override) return;
+      message.categoryOverride = override;
+      renderInboxQueue();
+      selectCreatorMessage(message.id);
+      showToast("Human audit override saved and reflected in the inbox.");
     });
   }
 
   const btnCopyReply = document.getElementById("btnCopyReply");
   if (btnCopyReply) {
-    btnCopyReply.addEventListener("click", () => {
+    btnCopyReply.addEventListener("click", async () => {
       const draftEl = document.getElementById("readerLlmDraft");
-      if (draftEl) {
-        navigator.clipboard.writeText(draftEl.value);
-        btnCopyReply.textContent = "Copied";
-        setTimeout(() => {
-          btnCopyReply.textContent = "Copy Response";
-        }, 2000);
+      if (!draftEl?.value) return;
+      try {
+        await navigator.clipboard.writeText(draftEl.value);
+      } catch (error) {
+        draftEl.select();
+        document.execCommand("copy");
       }
+      btnCopyReply.textContent = "Copied";
+      setTimeout(() => {
+        btnCopyReply.textContent = "Copy Response";
+      }, 1800);
     });
   }
 
   const btnSendReply = document.getElementById("btnSendReply");
   if (btnSendReply) {
     btnSendReply.addEventListener("click", () => {
-      showToast("Response approved and automated CRM workflow actioned.");
+      executeCrmAction(btnSendReply);
     });
   }
 
@@ -803,6 +905,59 @@ function initEventListeners() {
   }
 }
 
+function setDrawerOpen(isOpen) {
+  const drawer = document.getElementById("customSlideDrawer");
+  const toggle = document.getElementById("btnToggleCustomBox");
+  if (!drawer || !toggle) return;
+
+  toggle.setAttribute("aria-expanded", String(isOpen));
+  if (isOpen) {
+    drawer.hidden = false;
+    requestAnimationFrame(() => {
+      drawer.classList.add("open");
+      drawer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      document.getElementById("customMessageText")?.focus();
+    });
+    return;
+  }
+
+  drawer.classList.remove("open");
+  window.setTimeout(() => {
+    if (!drawer.classList.contains("open")) drawer.hidden = true;
+  }, 360);
+}
+
+async function executeCrmAction(button) {
+  const message = CREATOR_INBOX_QUEUE.find(item => item.id === selectedMessageId);
+  if (!message) return;
+
+  button.disabled = true;
+  button.setAttribute("aria-busy", "true");
+  const originalText = button.textContent;
+  button.textContent = "Executing...";
+
+  try {
+    const response = await fetch("/api/v1/webhook/reply", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        campaign_id: `camp_${activeCampaignId}`,
+        creator_handle: message.handle,
+        platform: message.platform,
+        message: message.text
+      })
+    });
+    if (!response.ok) throw new Error("CRM action request failed");
+    showToast("CRM action executed and creator reply logged.");
+  } catch (error) {
+    showToast("Demo mode: approval recorded locally. Start the server to persist the CRM action.");
+  } finally {
+    button.disabled = false;
+    button.removeAttribute("aria-busy");
+    button.textContent = originalText;
+  }
+}
+
 // ============================================================================
 // 10. BATCH CLASSIFICATION & EXPORT HELPERS
 // ============================================================================
@@ -826,7 +981,7 @@ function runBatchClassification() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${idx + 1}</td>
-      <td style="font-weight: 500; color: #0F172A;">${line}</td>
+      <td class="batch-reply-cell">${escapeHtml(line)}</td>
       <td><span class="intent-pill ${meta.badgeClass}">${meta.label}</span></td>
       <td>${confPercent}%</td>
       <td style="font-size: 12px;">${meta.pillHtml}</td>
@@ -918,6 +1073,7 @@ function classifyFullInboxIntoBatch() {
     batchTextarea.value = CREATOR_INBOX_QUEUE.map(item => item.text).join("\n");
   }
   runBatchClassification();
+  activateView("view-batch");
   showToast("Full inbox classified into the batch analysis table.");
 }
 
@@ -925,8 +1081,11 @@ function showToast(msg) {
   const toast = document.getElementById("toastNotification");
   if (!toast) return;
   toast.textContent = msg;
-  toast.style.display = "block";
-  setTimeout(() => {
-    toast.style.display = "none";
+  toast.classList.remove("is-visible");
+  void toast.offsetWidth;
+  toast.classList.add("is-visible");
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => {
+    toast.classList.remove("is-visible");
   }, 3200);
 }
