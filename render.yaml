@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: aura-crm-reply-intent
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: PGSSL
+        value: "true"
+      - key: NVIDIA_API_KEY
+        sync: false

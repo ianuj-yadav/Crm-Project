@@ -49,6 +49,18 @@ Only high-confidence, non-ambiguous replies receive a simulated CRM action. All 
 
 To enable NVIDIA Nemotron, add `NVIDIA_API_KEY` to `.env.local`. Without it, the grounded local engine remains available.
 
+## Deploying to Render
+
+The repository includes [`render.yaml`](render.yaml) for a Render web service. In Render, choose **New +** > **Blueprint**, select this GitHub repository, and create the `aura-crm-reply-intent` service.
+
+Before the first deploy, add these service environment variables in Render:
+
+- `DATABASE_URL`: private PostgreSQL connection string.
+- `PGSSL=true`: enables TLS for managed PostgreSQL providers.
+- `NVIDIA_API_KEY`: optional. The application remains functional with its deterministic grounded fallback when this is not configured.
+
+Render runs `npm install`, starts the service with `npm start`, then checks `/api/v1/health`. The server runs migrations and idempotent seed data on startup.
+
 ## API Highlights
 
 - `POST /api/v1/classify` - persist, classify, ground, draft, and audit one reply.
