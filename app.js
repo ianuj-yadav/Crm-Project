@@ -414,6 +414,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initEventListeners();
   initIntelligenceEvents();
   initWorkspaceMotion();
+  initTactileAnimations();
   playViewEntrance(document.getElementById("view-inbox"));
 });
 
@@ -551,6 +552,19 @@ function initWorkspaceMotion() {
   document.querySelectorAll(
     ".campaign-header-card, .challenge-status-grid, .reader-box, .analysis-cards-row, .crm-action-strip, .llm-card, .content-wrapper"
   ).forEach(element => element.classList.add("motion-item"));
+}
+
+function initTactileAnimations() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  document.addEventListener("click", event => {
+    const button = event.target.closest("button");
+    if (!button) return;
+
+    button.classList.remove("press-flash");
+    requestAnimationFrame(() => button.classList.add("press-flash"));
+    window.setTimeout(() => button.classList.remove("press-flash"), 360);
+  });
 }
 
 function playViewEntrance(view) {
