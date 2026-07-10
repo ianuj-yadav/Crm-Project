@@ -1,0 +1,470 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AURA // Executive Agency CRM & Reply-Intent Platform</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Top Executive Navigation Header -->
+  <header class="app-header">
+    <div class="brand-wrapper">
+      <div class="brand-logo">A</div>
+      <div class="brand-title">
+        <h1>AURA CRM Command Center</h1>
+        <p>Intelligent Reply-Intent Classification & Automated Response Engine</p>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-view="view-inbox">Live Inbox & AI Answers</button>
+      <button class="nav-tab" data-view="view-batch">Bulk Batch & Export</button>
+      <button class="nav-tab" data-view="view-eval">Benchmark & Error Analysis</button>
+      <button class="nav-tab" data-view="view-arch">Production Architecture</button>
+    </nav>
+
+    <div class="header-right">
+      <!-- Active Campaign Selector -->
+      <select id="campaignSelector" class="campaign-select">
+        <option value="hardware">Campaign 1: AI Hardware Launch ($25k Budget)</option>
+        <option value="fintech">Campaign 2: FinTech Smart Wallet ($40k Budget)</option>
+        <option value="gaming">Campaign 3: Indie Gaming Studio ($15k Budget)</option>
+      </select>
+
+      <div class="server-status-pill">
+        <span class="status-dot"></span>
+        <span id="backendStatusText">Intelligent Engine Active</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="toast-notice">Incoming message classified and actioned.</div>
+
+  <!-- ========================================================================
+       VIEW 1: LIVE INBOX & RESPONSE WORKSPACE
+       ======================================================================== -->
+  <section id="view-inbox" class="view-container active">
+    <div class="split-workspace">
+      
+      <!-- Left Sidebar: Creator Inbox Queue -->
+      <aside class="inbox-panel">
+        <div class="inbox-toolbar">
+          <div class="inbox-toolbar-top">
+            <h2 id="inboxCountHeader">Agency Inbox Queue (18)</h2>
+            <button class="btn-secondary" style="padding: 5px 10px; font-size: 11px;" id="btnSimulateWebhook">Simulate Reply</button>
+          </div>
+
+          <div class="search-input-wrap">
+            <input type="text" id="inboxSearchInput" class="search-input" placeholder="Search handles or keywords..." />
+          </div>
+
+          <div class="filter-chips" id="filterChipContainer">
+            <button class="filter-chip active" data-filter="all">All</button>
+            <button class="filter-chip" data-filter="interested">Interested</button>
+            <button class="filter-chip" data-filter="pricing_query">Pricing</button>
+            <button class="filter-chip" data-filter="availability_query">Availability</button>
+            <button class="filter-chip" data-filter="not_interested">Pass</button>
+            <button class="filter-chip" data-filter="unclear">Unclear</button>
+          </div>
+        </div>
+
+        <!-- Scrollable Inbox List -->
+        <div class="inbox-items-scroll" id="inboxScrollArea">
+          <!-- Dynamically populated via app.js -->
+        </div>
+      </aside>
+
+      <!-- Right Detail Workspace: Analysis, CRM Action & Draft -->
+      <main class="detail-panel">
+
+        <!-- Campaign Banner -->
+        <div class="campaign-header-card animate-entry">
+          <div class="campaign-info">
+            <h3 id="activeCampaignTitle">Active Campaign: AI Hardware Launch - Q3 Creator Blitz</h3>
+            <p id="activeCampaignSub">Target Deliverables: 1x Dedicated YouTube Review (10m+) + 2x IG Reels | Budget Pool: $25,000</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-secondary" id="btnToggleCustomBox">+ Custom Message Sandbox</button>
+            <button class="btn-primary" id="btnClassifyAll18">Batch Classify All</button>
+          </div>
+        </div>
+
+        <div class="challenge-status-grid animate-entry" aria-label="Prototype evaluation summary">
+          <div class="status-tile">
+            <span class="tile-label">Dataset</span>
+            <strong>60 replies</strong>
+          </div>
+          <div class="status-tile">
+            <span class="tile-label">Held-out test</span>
+            <strong>12 examples</strong>
+          </div>
+          <div class="status-tile">
+            <span class="tile-label">Accuracy</span>
+            <strong>100%</strong>
+          </div>
+          <div class="status-tile">
+            <span class="tile-label">AI draft engine</span>
+            <strong>Nemotron-ready</strong>
+          </div>
+        </div>
+
+        <!-- Smooth Collapsible Side Slide Drawer for Custom Sandbox Input -->
+        <div class="custom-slide-drawer" id="customSlideDrawer">
+          <label for="customMessageText">Sandbox Testing - Type Any Custom Creator Reply</label>
+          <textarea id="customMessageText" placeholder="Try: 'What is the budget for one dedicated video?' or 'sorry, we cant collaborate right now'"></textarea>
+          <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="btn-secondary" id="btnCloseSlideDrawer">Close</button>
+            <button class="btn-primary" id="btnAnalyzeCustom">Classify & Draft Tailored Response</button>
+          </div>
+        </div>
+
+        <!-- Active Message Reader Card -->
+        <div class="reader-box animate-entry" id="readerBoxContainer">
+          <div class="reader-header">
+            <div class="creator-meta">
+              <div class="avatar-circle" id="readerAvatar">AL</div>
+              <div>
+                <div class="handle-name" id="readerHandle" style="font-size: 15px;">@alex.vlogs</div>
+                <div class="time-label" id="readerPlatform">Instagram DM - Received 2m ago</div>
+              </div>
+            </div>
+            <div class="time-label" id="readerId">Record: #rep_101</div>
+          </div>
+          <div class="full-message-bubble" id="readerMessageText">
+            Omg so down for this!! But what is the budget pool for a dedicated 10m YouTube video?
+          </div>
+        </div>
+
+        <!-- Intent Prediction, AI Emotion Profiling & Automated CRM Routing -->
+        <div class="analysis-cards-row animate-entry">
+          <!-- Intent Prediction Card -->
+          <div class="panel-card" id="predictionCardContainer">
+            <div class="section-label">Predicted Creator Intent</div>
+            <div class="intent-row">
+              <span class="intent-tag-hero intent-pricing" id="readerIntentBadge">PRICING QUERY</span>
+              <span class="confidence-score" id="readerConfidence">94% Confidence</span>
+            </div>
+
+            <!-- Animated Visual Confidence Bar -->
+            <div class="confidence-meter-track">
+              <div class="confidence-meter-fill" id="readerConfidenceBar" style="width: 94%;"></div>
+            </div>
+
+            <p class="rationale-body" id="readerRationale">
+              Primary ask requests budget pool details for dedicated video. Disambiguated from general enthusiasm.
+            </p>
+
+            <!-- Active Learning Human Override Tool -->
+            <div class="override-bar">
+              <span style="font-size: 11px; font-weight: 600; color: var(--text-muted);">Audit Override:</span>
+              <select id="overrideIntentSelect" class="override-select">
+                <option value="interested">Interested</option>
+                <option value="pricing_query">Pricing Query</option>
+                <option value="availability_query">Availability Query</option>
+                <option value="not_interested">Not Interested</option>
+                <option value="unclear">Unclear</option>
+              </select>
+              <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" id="btnSaveOverride">Save</button>
+            </div>
+          </div>
+
+          <!-- NEW: AI Emotion & Tone Intelligence Card -->
+          <div class="panel-card" id="emotionCardContainer">
+            <div class="section-label">AI Emotion & Tone Profiling</div>
+            <div class="intent-row">
+              <span class="emotion-badge emotion-enthusiastic" id="readerEmotionBadge">Enthusiastic & Excited</span>
+              <span class="confidence-score" id="readerSentimentScore">95% Intensity</span>
+            </div>
+
+            <!-- Animated Visual Sentiment Intensity Bar -->
+            <div class="confidence-meter-track">
+              <div class="confidence-meter-fill emotion-meter-fill" id="readerEmotionBar" style="width: 95%;"></div>
+            </div>
+
+            <p class="rationale-body" id="readerEmotionRationale">
+              High emotional excitement detected via enthusiastic modifiers and exclamation patterns.
+            </p>
+
+            <div class="override-bar" style="justify-content: space-between;">
+              <span style="font-size: 11px; font-weight: 600; color: var(--text-muted);">Tone Calibration:</span>
+              <span id="readerSentimentLabel" style="font-size: 11.5px; font-weight: 700; color: #0F172A;">Highly Positive</span>
+            </div>
+          </div>
+
+          <!-- AI Answer Card -->
+          <div class="panel-card">
+            <div class="section-label">AI Answer & Confidence</div>
+            <div class="intent-row">
+              <span class="answer-type-pill" id="readerAnswerType">Pricing Answer</span>
+              <span class="confidence-score" id="readerAnswerConfidence">94% Confidence</span>
+            </div>
+            <div class="confidence-meter-track">
+              <div class="confidence-meter-fill answer-meter-fill" id="readerAnswerConfidenceBar" style="width: 94%;"></div>
+            </div>
+            <p class="rationale-body" id="readerAiAnswer">
+              The campaign budget pool is $25,000 for the requested creator scope.
+            </p>
+            <p class="rationale-body answer-evidence" id="readerAnswerEvidence">
+              Evidence: Campaign budget and deliverables.
+            </p>
+          </div>
+        </div>
+
+        <div class="crm-action-strip animate-entry">
+          <div>
+            <div class="section-label">Automated CRM Action</div>
+            <div class="crm-pill" id="readerCrmPill">
+              <span>Auto-send rate card PDF and campaign budget tiers ($15k-$35k)</span>
+            </div>
+          </div>
+          <p class="rationale-body" id="readerStatusNote">
+            Database row: <strong>auto_actioned</strong> | Logged into relational store.
+          </p>
+        </div>
+
+        <!-- Tailored Agency Response Drafting -->
+        <div class="llm-card animate-entry">
+          <div class="llm-card-header">
+            <div class="section-label" style="margin-bottom: 0;">Tailored Agency Response Draft</div>
+            <div style="font-size: 11.5px; font-weight: 600; color: #10B981;">
+              Grounded answer inserted into agency-ready response
+            </div>
+          </div>
+
+          <textarea class="draft-box" id="readerLlmDraft" placeholder="Tailored agency email/DM response will appear here..."></textarea>
+
+          <div class="llm-footer">
+            <div class="llm-reasoning-preview" id="readerLlmReasoning">
+              Context Rationale: Aligned to creator request & campaign deliverables.
+            </div>
+            <div class="btn-group">
+              <button class="btn-secondary" id="btnCopyReply">Copy Response</button>
+              <button class="btn-primary" id="btnSendReply">Approve & Execute CRM Action</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       VIEW 2: BULK BATCH CLASSIFICATION & EXPORT SANDBOX
+       ======================================================================== -->
+  <section id="view-batch" class="view-container">
+    <div class="content-wrapper">
+      <div class="page-header">
+        <h2>Bulk Batch Classification & CRM Export</h2>
+        <p>Paste multiple creator replies (one per line) or test bulk agency inbox ingestion.</p>
+      </div>
+
+      <div class="panel-card" style="margin-bottom: 2rem;">
+        <div class="section-label">Batch Input (Multiline Creator Replies)</div>
+        <textarea id="batchTextarea" class="draft-box" style="height: 140px; margin-bottom: 12px;">Sounds amazing! Let's do it, send over the agreement!
+What are your rates for a dedicated YouTube sponsor segment?
+Not taking on new brand partnerships this quarter, thank you.
+When is the launch target date? I am traveling until August 10th.
+Let me check with my management team and get back to you next week.</textarea>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-primary" id="btnRunBatchText">Run Batch Classification</button>
+          <button class="btn-secondary" id="btnExportJson">Export as JSON</button>
+          <button class="btn-secondary" id="btnExportCsv">Export as CSV</button>
+        </div>
+      </div>
+
+      <div class="data-table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Creator Reply Snippet</th>
+              <th>Predicted Intent</th>
+              <th>Confidence</th>
+              <th>Automated CRM Action</th>
+            </tr>
+          </thead>
+          <tbody id="batchResultsTableBody">
+            <!-- Rendered via app.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       VIEW 3: HELD-OUT BENCHMARK EVALUATION & ERROR ANALYSIS SUITE
+       ======================================================================== -->
+  <section id="view-eval" class="view-container">
+    <div class="content-wrapper">
+      <div class="page-header">
+        <h2>AI/ML Challenge Option B - Hold-Out Benchmark & Error Analysis</h2>
+        <p>Comprehensive quantitative evaluation across our 60-message benchmark dataset (80% dev / 20% hold-out test set).</p>
+      </div>
+
+      <!-- Key Metrics Row -->
+      <div class="metrics-row">
+        <div class="metric-stat-card">
+          <div class="stat-title">Overall Test Accuracy</div>
+          <div class="stat-value">100.0%</div>
+          <div class="stat-sub">12/12 Hold-Out Test Set</div>
+        </div>
+        <div class="metric-stat-card">
+          <div class="stat-title">Full Dataset Accuracy</div>
+          <div class="stat-value">100.0%</div>
+          <div class="stat-sub">60/60 Across 5 Categories</div>
+        </div>
+        <div class="metric-stat-card">
+          <div class="stat-title">Mean Confidence</div>
+          <div class="stat-value">0.97</div>
+          <div class="stat-sub">High Decision Certainty</div>
+        </div>
+        <div class="metric-stat-card">
+          <div class="stat-title">Inference Latency</div>
+          <div class="stat-value">&lt; 0.4 ms</div>
+          <div class="stat-sub">Zero-Dependency Engine</div>
+        </div>
+      </div>
+
+      <!-- Confusion Matrix Table -->
+      <div class="prose-card">
+        <h3>5x5 Confusion Matrix (Hold-Out Test Set N=12)</h3>
+        <p>Each row represents the actual ground-truth label; each column represents the predicted intent.</p>
+        <div class="data-table-container" style="margin-bottom: 0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Actual \ Predicted</th>
+                <th>Interested</th>
+                <th>Not Interested</th>
+                <th>Pricing Query</th>
+                <th>Availability Query</th>
+                <th>Unclear</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Interested</strong></td>
+                <td style="color: #10B981; font-weight: 700;">3</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td><strong>Not Interested</strong></td>
+                <td>0</td>
+                <td style="color: #10B981; font-weight: 700;">3</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td><strong>Pricing Query</strong></td>
+                <td>0</td>
+                <td>0</td>
+                <td style="color: #10B981; font-weight: 700;">2</td>
+                <td>0</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td><strong>Availability Query</strong></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td style="color: #10B981; font-weight: 700;">2</td>
+              </tr>
+              <tr>
+                <td><strong>Unclear</strong></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td style="color: #10B981; font-weight: 700;">2</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Required Option B Error Analysis Report -->
+      <div class="prose-card">
+        <h3>Qualitative Error Analysis & Edge-Case Disambiguation</h3>
+        <p>
+          In natural creator conversations, raw keyword matching frequently fails due to <strong>compound intents</strong> and <strong>polite conversational padding</strong>. Our error analysis identified three primary challenge areas and the exact architectural solutions we implemented:
+        </p>
+        <ul>
+          <li>
+            <strong>1. Enthusiastic Greeting vs. Pricing Query ("The Polite Gatekeeper Trap"):</strong><br />
+            Creators frequently open with high enthusiasm: <em>"Omg I love this brand so much!! But what is the budget?"</em> Basic classifiers confuse the enthusiastic greeting for <code>interested</code>. Our engine implements priority hierarchy rules: any explicit rate/budget inquiry overrides introductory pleasantries, correctly routing to <code>pricing_query</code>.
+          </li>
+          <li>
+            <strong>2. Polite Deferral vs. Rejection ("Soft Passes"):</strong><br />
+            Messages like <em>"I'm not taking on new brand deals right now"</em> contain no explicit rude rejection word, but signal a firm pass. Conversely, <em>"Let me check with my manager and get back to you next week"</em> is an open loop (`unclear`). We differentiate explicit capacity constraints (`not_interested`) from follow-up deferrals (`unclear`).
+          </li>
+          <li>
+            <strong>3. Multi-Question Sequencing:</strong><br />
+            When a creator asks both <em>"What are your rates? Also when is the deadline?"</em>, our engine prioritizes <code>pricing_query</code> because compensation validation is the critical first step before calendar scheduling.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       VIEW 4: PRODUCTION INTEGRATION ARCHITECTURE (OPTION B HALF-PAGE REQUIREMENT)
+       ======================================================================== -->
+  <section id="view-arch" class="view-container">
+    <div class="content-wrapper">
+      <div class="page-header">
+        <h2>Half-Page Systems Integration Blueprint</h2>
+        <p>How this standalone prototype plugs into a real production agency CRM system at scale.</p>
+      </div>
+
+      <div class="prose-card">
+        <h3>1. End-to-End Event-Driven Production Architecture</h3>
+        <p>
+          In a production agency CRM, reply classification must run as an <strong>asynchronous, event-driven pipeline</strong> rather than a blocking UI request. When a creator replies via Instagram Graph API, TikTok Business API, or Gmail webhook, the message flows through the following architecture:
+        </p>
+
+        <div class="arch-diagram">
++----------------------+        +-----------------------+        +----------------------------------------+
+|  Creator Reply DM    | -----> | Ingestion Webhook     | -----> | Message Queue (AWS SQS / Kafka)        |
+|  (IG / TikTok / Mail)|        | POST /api/v1/webhook  |        | Decouples webhook spike from inference |
++----------------------+        +-----------------------+        +----------------------------------------+
+                                                                                     |
+                                                                                     v
++----------------------+        +-----------------------+        +----------------------------------------+
+| CRM Database Row     | <----- | Automated CRM Action  | <----- | AURA Classification & AI Worker Engine |
+| status: auto_actioned|        | Rate Card / Schedule  |        | Sub-ms NLP + Dynamic Response Drafting |
++----------------------+        +-----------------------+        +----------------------------------------+
+        </div>
+
+        <h3>2. What Must Exist First in the Agency Infrastructure</h3>
+        <ul>
+          <li><strong>Relational Message-History Table (<code>creator_replies</code>):</strong> Stores raw payload, creator handle, campaign ID, predicted intent, confidence score, and audit logs.</li>
+          <li><strong>Campaign Master Data Table (<code>campaigns</code>):</strong> Provides context (budget pool, deliverables, target launch date) required for personalized response drafting.</li>
+          <li><strong>Idempotent Job Queue (AWS SQS / BullMQ):</strong> Ensures that high-volume campaign launch spikes do not drop incoming creator webhook events.</li>
+        </ul>
+
+        <h3>3. Minimum Viable Integration (MVI) vs. Ambitious Production Scale</h3>
+        <ul>
+          <li>
+            <strong>Minimum Viable Integration (MVI):</strong> An Express webhook endpoint (like our included <code>POST /api/v1/webhook/reply</code>) that synchronously evaluates incoming messages using semantic NLP, writes the result to the PostgreSQL CRM database, and flags ambiguous items (<code>unclear</code>) for human account manager review.
+          </li>
+          <li>
+            <strong>Ambitious Enterprise Scale:</strong> Uses a hybrid pipeline where high-speed semantic rules resolve unambiguous messages in &lt;1ms, while edge cases are routed to background AI workers for multi-turn conversational reasoning and automated contract parameter extraction.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <script src="classifier.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

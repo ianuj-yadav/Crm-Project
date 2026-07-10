@@ -1,0 +1,151 @@
+{
+  "timestamp": "2026-07-09T19:13:34.158Z",
+  "held_out_test_set_metrics": {
+    "accuracy_percent": 100,
+    "correct_count": 12,
+    "total_count": 12,
+    "per_category_metrics": {
+      "interested": {
+        "precision": 1,
+        "recall": 1,
+        "f1_score": 1,
+        "support": 1
+      },
+      "not_interested": {
+        "precision": 1,
+        "recall": 1,
+        "f1_score": 1,
+        "support": 3
+      },
+      "pricing_query": {
+        "precision": 1,
+        "recall": 1,
+        "f1_score": 1,
+        "support": 2
+      },
+      "availability_query": {
+        "precision": 1,
+        "recall": 1,
+        "f1_score": 1,
+        "support": 3
+      },
+      "unclear": {
+        "precision": 1,
+        "recall": 1,
+        "f1_score": 1,
+        "support": 3
+      }
+    },
+    "confusion_matrix": {
+      "interested": {
+        "interested": 1,
+        "not_interested": 0,
+        "pricing_query": 0,
+        "availability_query": 0,
+        "unclear": 0
+      },
+      "not_interested": {
+        "interested": 0,
+        "not_interested": 3,
+        "pricing_query": 0,
+        "availability_query": 0,
+        "unclear": 0
+      },
+      "pricing_query": {
+        "interested": 0,
+        "not_interested": 0,
+        "pricing_query": 2,
+        "availability_query": 0,
+        "unclear": 0
+      },
+      "availability_query": {
+        "interested": 0,
+        "not_interested": 0,
+        "pricing_query": 0,
+        "availability_query": 3,
+        "unclear": 0
+      },
+      "unclear": {
+        "interested": 0,
+        "not_interested": 0,
+        "pricing_query": 0,
+        "availability_query": 0,
+        "unclear": 3
+      }
+    }
+  },
+  "full_dataset_metrics": {
+    "accuracy_percent": 100,
+    "correct_count": 60,
+    "total_count": 60,
+    "per_category_metrics": {
+      "interested": {
+        "precision": 1,
+        "recall": 1,
+        "f1_score": 1,
+        "support": 10
+      },
+      "not_interested": {
+        "precision": 1,
+        "recall": 1,
+        "f1_score": 1,
+        "support": 13
+      },
+      "pricing_query": {
+        "precision": 1,
+        "recall": 1,
+        "f1_score": 1,
+        "support": 13
+      },
+      "availability_query": {
+        "precision": 1,
+        "recall": 1,
+        "f1_score": 1,
+        "support": 12
+      },
+      "unclear": {
+        "precision": 1,
+        "recall": 1,
+        "f1_score": 1,
+        "support": 12
+      }
+    },
+    "confusion_matrix": {
+      "interested": {
+        "interested": 10,
+        "not_interested": 0,
+        "pricing_query": 0,
+        "availability_query": 0,
+        "unclear": 0
+      },
+      "not_interested": {
+        "interested": 0,
+        "not_interested": 13,
+        "pricing_query": 0,
+        "availability_query": 0,
+        "unclear": 0
+      },
+      "pricing_query": {
+        "interested": 0,
+        "not_interested": 0,
+        "pricing_query": 13,
+        "availability_query": 0,
+        "unclear": 0
+      },
+      "availability_query": {
+        "interested": 0,
+        "not_interested": 0,
+        "pricing_query": 0,
+        "availability_query": 12,
+        "unclear": 0
+      },
+      "unclear": {
+        "interested": 0,
+        "not_interested": 0,
+        "pricing_query": 0,
+        "availability_query": 0,
+        "unclear": 12
+      }
+    }
+  }
+}

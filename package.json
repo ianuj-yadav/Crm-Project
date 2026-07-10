@@ -1,0 +1,26 @@
+{
+  "name": "aura-crm-reply-intent-backend",
+  "version": "1.0.0",
+  "description": "AI-Native CRM Backend & Relational Database for Creator Reply-Intent Classification & Automated Workflow Routing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "seed": "node src/database/seed.js",
+    "test": "node test_classifier.js && node evaluate.js"
+  },
+  "keywords": [
+    "crm",
+    "ai-native",
+    "influencer-marketing",
+    "reply-intent-classifier",
+    "nlp"
+  ],
+  "author": "AURA AI CRM Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7"
+  }
+}

@@ -1,0 +1,542 @@
+[
+  {
+    "id": "msg_001",
+    "message": "omg yes I'm so down for this, when do we start?",
+    "true_intent": "availability_query",
+    "split": "test",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Textbook benchmark #1. Expresses interest but asks about start timing."
+  },
+  {
+    "id": "msg_002",
+    "message": "not really my vibe, but good luck with the campaign!",
+    "true_intent": "not_interested",
+    "split": "test",
+    "platform": "TikTok DM",
+    "creator_tier": "Mid-Tier",
+    "notes": "Textbook benchmark #2. Explicit decline despite polite framing."
+  },
+  {
+    "id": "msg_003",
+    "message": "what's the pay looking like for something like this?",
+    "true_intent": "pricing_query",
+    "split": "test",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Textbook benchmark #3. Direct question about payment amount."
+  },
+  {
+    "id": "msg_004",
+    "message": "who gave you my email",
+    "true_intent": "unclear",
+    "split": "test",
+    "platform": "Email",
+    "creator_tier": "Nano",
+    "notes": "Textbook benchmark #4. Off-topic pushback with no clear intent signal."
+  },
+  {
+    "id": "msg_005",
+    "message": "I'm slammed until mid next month, could we talk after that?",
+    "true_intent": "availability_query",
+    "split": "test",
+    "platform": "Instagram DM",
+    "creator_tier": "Macro",
+    "notes": "Textbook benchmark #5. Primary content is scheduling constraint & proposed timing."
+  },
+  {
+    "id": "msg_006",
+    "message": "Sounds amazing! Send me more details and let's make it happen!!",
+    "true_intent": "interested",
+    "split": "test",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Unambiguous strong interest and willingness to collaborate."
+  },
+  {
+    "id": "msg_007",
+    "message": "Hey! Love the brand! What's the budget for 1 dedicated TikTok and 2 stories?",
+    "true_intent": "pricing_query",
+    "split": "test",
+    "platform": "TikTok DM",
+    "creator_tier": "Mid-Tier",
+    "notes": "Disambiguation Rule 2: Interest + pricing query -> prefer pricing_query."
+  },
+  {
+    "id": "msg_008",
+    "message": "Thank you for reaching out! I'm not taking on new partnerships right now.",
+    "true_intent": "not_interested",
+    "split": "test",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Silence-implying brush-off declining new partnerships."
+  },
+  {
+    "id": "msg_009",
+    "message": "What is the deadline for deliverables? Also what are your rates?",
+    "true_intent": "availability_query",
+    "split": "test",
+    "platform": "Email",
+    "creator_tier": "Mid-Tier",
+    "notes": "Disambiguation Rule 1: Raises both timing and price, timing asked first."
+  },
+  {
+    "id": "msg_010",
+    "message": "hm can you tell me more about the brand first?",
+    "true_intent": "unclear",
+    "split": "test",
+    "platform": "Instagram DM",
+    "creator_tier": "Nano",
+    "notes": "Information gathering without clear positive interest signal."
+  },
+  {
+    "id": "msg_011",
+    "message": "Let me think about it and check with my management team.",
+    "true_intent": "unclear",
+    "split": "test",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Disambiguation Rule 3: Polite non-answer without clear negative signal -> unclear."
+  },
+  {
+    "id": "msg_012",
+    "message": "No thanks, I'll pass on this opportunity.",
+    "true_intent": "not_interested",
+    "split": "test",
+    "platform": "TikTok DM",
+    "creator_tier": "Micro",
+    "notes": "Direct explicit pass."
+  },
+  {
+    "id": "msg_013",
+    "message": "I'd love to collaborate on this! Count me in.",
+    "true_intent": "interested",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Clear enthusiasm and commitment to move forward."
+  },
+  {
+    "id": "msg_014",
+    "message": "What is the compensation package for this campaign?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Mid-Tier",
+    "notes": "Direct question regarding rates/compensation."
+  },
+  {
+    "id": "msg_015",
+    "message": "When do you need the video live by?",
+    "true_intent": "availability_query",
+    "split": "train",
+    "platform": "TikTok DM",
+    "creator_tier": "Nano",
+    "notes": "Direct question about deadlines/scheduling."
+  },
+  {
+    "id": "msg_016",
+    "message": "Sorry, not for me!",
+    "true_intent": "not_interested",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Clear brief decline."
+  },
+  {
+    "id": "msg_017",
+    "message": "who is this?",
+    "true_intent": "unclear",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Nano",
+    "notes": "Off-topic / confusion."
+  },
+  {
+    "id": "msg_018",
+    "message": "Looks super cool! Send over the creative brief and let's do it.",
+    "true_intent": "interested",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Mid-Tier",
+    "notes": "Strong willingness to proceed."
+  },
+  {
+    "id": "msg_019",
+    "message": "Do you guys have a budget for paid seeding?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Budget inquiry."
+  },
+  {
+    "id": "msg_020",
+    "message": "I'm fully booked for Q3, sorry about that!",
+    "true_intent": "not_interested",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Silence-implying decline via full booking without alternative date."
+  },
+  {
+    "id": "msg_021",
+    "message": "What are your rates? Also when is the campaign launch date?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Mid-Tier",
+    "notes": "Disambiguation Rule 1: Pricing asked first before launch timing."
+  },
+  {
+    "id": "msg_022",
+    "message": "I'm booked until August, does that work for your team?",
+    "true_intent": "availability_query",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Macro",
+    "notes": "Scheduling constraint asking if timeline fits."
+  },
+  {
+    "id": "msg_023",
+    "message": "sounds great, let's do it!!",
+    "true_intent": "interested",
+    "split": "train",
+    "platform": "TikTok DM",
+    "creator_tier": "Nano",
+    "notes": "Classic textbook interest signal."
+  },
+  {
+    "id": "msg_024",
+    "message": "how much does this pay?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Nano",
+    "notes": "Direct pay question."
+  },
+  {
+    "id": "msg_025",
+    "message": "not really my vibe, have a great week tho!",
+    "true_intent": "not_interested",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Explicit decline."
+  },
+  {
+    "id": "msg_026",
+    "message": "what is your company website?",
+    "true_intent": "unclear",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Mid-Tier",
+    "notes": "Vague info-gathering."
+  },
+  {
+    "id": "msg_027",
+    "message": "I would love to participate! When do you need the concept draft?",
+    "true_intent": "availability_query",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Disambiguation Rule 2: Interest + timing ask -> prefer availability_query."
+  },
+  {
+    "id": "msg_028",
+    "message": "Send me more details, I'd love to work together!",
+    "true_intent": "interested",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Pure positive collaboration intent."
+  },
+  {
+    "id": "msg_029",
+    "message": "What is the budget for this sponsorship?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "TikTok DM",
+    "creator_tier": "Mid-Tier",
+    "notes": "Direct budget ask."
+  },
+  {
+    "id": "msg_030",
+    "message": "I'll pass on this one, thank you!",
+    "true_intent": "not_interested",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Direct pass."
+  },
+  {
+    "id": "msg_031",
+    "message": "what's the timeline looking like for this project?",
+    "true_intent": "availability_query",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Direct timeline ask."
+  },
+  {
+    "id": "msg_032",
+    "message": "let me check with my agent and get back to you soon.",
+    "true_intent": "unclear",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Disambiguation Rule 3: Polite non-answer without negative signal."
+  },
+  {
+    "id": "msg_033",
+    "message": "I'd love to! What does this pay?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "TikTok DM",
+    "creator_tier": "Nano",
+    "notes": "Disambiguation Rule 2: Interest + pay ask -> prefer pricing_query."
+  },
+  {
+    "id": "msg_034",
+    "message": "I'm not accepting new brand sponsorships at the moment.",
+    "true_intent": "not_interested",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Mid-Tier",
+    "notes": "Silence-implying brush-off."
+  },
+  {
+    "id": "msg_035",
+    "message": "??",
+    "true_intent": "unclear",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Nano",
+    "notes": "Ambiguous / too short."
+  },
+  {
+    "id": "msg_036",
+    "message": "Would love to collab! Send over the agreement.",
+    "true_intent": "interested",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Strong interest."
+  },
+  {
+    "id": "msg_037",
+    "message": "What rate are you offering for dedicated YouTube integration?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Rate question."
+  },
+  {
+    "id": "msg_038",
+    "message": "I'm traveling until the 25th, when do we need to start recording?",
+    "true_intent": "availability_query",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Mid-Tier",
+    "notes": "Timing ask with travel constraint."
+  },
+  {
+    "id": "msg_039",
+    "message": "Unfortunately I'll have to decline due to category exclusivity.",
+    "true_intent": "not_interested",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Polite explicit decline."
+  },
+  {
+    "id": "msg_040",
+    "message": "how did you get my contact info?",
+    "true_intent": "unclear",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Micro",
+    "notes": "Off-topic pushback."
+  },
+  {
+    "id": "msg_041",
+    "message": "Love this product!! Let's collaborate.",
+    "true_intent": "interested",
+    "split": "train",
+    "platform": "TikTok DM",
+    "creator_tier": "Nano",
+    "notes": "Clear willingness to proceed."
+  },
+  {
+    "id": "msg_042",
+    "message": "What's the budget? And when do you need the content published?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Mid-Tier",
+    "notes": "Disambiguation Rule 1: Budget asked first."
+  },
+  {
+    "id": "msg_043",
+    "message": "When do you need this posted? Also what is your rate per Reel?",
+    "true_intent": "availability_query",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Disambiguation Rule 1: Posting date asked first."
+  },
+  {
+    "id": "msg_044",
+    "message": "No thank you!",
+    "true_intent": "not_interested",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Nano",
+    "notes": "Direct pass."
+  },
+  {
+    "id": "msg_045",
+    "message": "Let me review the brief and get back to you tomorrow.",
+    "true_intent": "unclear",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Mid-Tier",
+    "notes": "Polite non-answer."
+  },
+  {
+    "id": "msg_046",
+    "message": "I'm so down for this!! Let's do it.",
+    "true_intent": "interested",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Nano",
+    "notes": "Willingness to proceed."
+  },
+  {
+    "id": "msg_047",
+    "message": "Can you share the budget deliverables?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Micro",
+    "notes": "Pricing ask."
+  },
+  {
+    "id": "msg_048",
+    "message": "What is the launch date for the campaign?",
+    "true_intent": "availability_query",
+    "split": "train",
+    "platform": "TikTok DM",
+    "creator_tier": "Mid-Tier",
+    "notes": "Timing ask."
+  },
+  {
+    "id": "msg_049",
+    "message": "Not for me, but keep me in mind for future fashion campaigns!",
+    "true_intent": "not_interested",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Macro",
+    "notes": "Decline current campaign despite polite future interest."
+  },
+  {
+    "id": "msg_050",
+    "message": "hm okay cool",
+    "true_intent": "unclear",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Nano",
+    "notes": "Vibe only."
+  },
+  {
+    "id": "msg_051",
+    "message": "Send me more details, I'd love to hear more!",
+    "true_intent": "interested",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Micro",
+    "notes": "Clear willingness to proceed."
+  },
+  {
+    "id": "msg_052",
+    "message": "Do you have a budget for this collab?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Nano",
+    "notes": "Budget inquiry."
+  },
+  {
+    "id": "msg_053",
+    "message": "When do we start shooting?",
+    "true_intent": "availability_query",
+    "split": "train",
+    "platform": "TikTok DM",
+    "creator_tier": "Micro",
+    "notes": "Start timing inquiry."
+  },
+  {
+    "id": "msg_054",
+    "message": "Gonna pass on this, thanks!",
+    "true_intent": "not_interested",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Mid-Tier",
+    "notes": "Explicit decline."
+  },
+  {
+    "id": "msg_055",
+    "message": "unsubscribe",
+    "true_intent": "unclear",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Off-topic pushback."
+  },
+  {
+    "id": "msg_056",
+    "message": "I would love to be part of this campaign! Send over the contract.",
+    "true_intent": "interested",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Strong interest."
+  },
+  {
+    "id": "msg_057",
+    "message": "What are your rates for Instagram Stories?",
+    "true_intent": "pricing_query",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Mid-Tier",
+    "notes": "Rates ask."
+  },
+  {
+    "id": "msg_058",
+    "message": "I'm busy until next month, can we do early September?",
+    "true_intent": "availability_query",
+    "split": "train",
+    "platform": "Email",
+    "creator_tier": "Macro",
+    "notes": "Scheduling constraint proposing alternative."
+  },
+  {
+    "id": "msg_059",
+    "message": "Sorry, not accepting new promos.",
+    "true_intent": "not_interested",
+    "split": "train",
+    "platform": "TikTok DM",
+    "creator_tier": "Nano",
+    "notes": "Decline."
+  },
+  {
+    "id": "msg_060",
+    "message": "Who is the brand?",
+    "true_intent": "unclear",
+    "split": "train",
+    "platform": "Instagram DM",
+    "creator_tier": "Micro",
+    "notes": "Information gathering without interest signal."
+  }
+]
