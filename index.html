@@ -39,7 +39,7 @@
 
       <div class="server-status-pill">
         <span class="status-dot"></span>
-        <span id="backendStatusText">Intelligent Engine Active</span>
+        <span id="backendStatusText">Replies ready</span>
       </div>
       <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Dark mode</button>
     </div>
@@ -91,8 +91,8 @@
             <p id="activeCampaignSub">Target Deliverables: 1x Dedicated YouTube Review (10m+) + 2x IG Reels | Budget Pool: $25,000</p>
           </div>
           <div style="display: flex; gap: 8px;">
-            <button class="btn-secondary" id="btnToggleCustomBox" type="button" aria-expanded="false" aria-controls="customSlideDrawer">Custom Message Sandbox</button>
-            <button class="btn-primary" id="btnClassifyAll18">Batch Classify All</button>
+            <button class="btn-secondary" id="btnToggleCustomBox" type="button" aria-expanded="false" aria-controls="customSlideDrawer">Test a reply</button>
+            <button class="btn-primary" id="btnClassifyAll18">Classify inbox</button>
           </div>
         </div>
 
@@ -110,19 +110,19 @@
             <strong>100%</strong>
           </div>
           <div class="status-tile">
-            <span class="tile-label">AI draft engine</span>
-            <strong>Nemotron-ready</strong>
+            <span class="tile-label">Drafting</span>
+            <strong>Campaign-grounded</strong>
           </div>
         </div>
 
         <!-- Smooth Collapsible Side Slide Drawer for Custom Sandbox Input -->
         <div class="custom-slide-drawer" id="customSlideDrawer" role="region" aria-labelledby="customMessageLabel" hidden>
           <div class="custom-slide-drawer-inner">
-            <label id="customMessageLabel" for="customMessageText">Sandbox Testing - Type Any Custom Creator Reply</label>
+            <label id="customMessageLabel" for="customMessageText">Test a creator reply</label>
           <textarea id="customMessageText" placeholder="Try: 'What is the budget for one dedicated video?' or 'sorry, we cant collaborate right now'"></textarea>
           <div style="display: flex; justify-content: flex-end; gap: 8px;">
             <button class="btn-secondary" id="btnCloseSlideDrawer">Close</button>
-            <button class="btn-primary" id="btnAnalyzeCustom">Classify & Draft Tailored Response</button>
+            <button class="btn-primary" id="btnAnalyzeCustom">Classify and draft</button>
           </div>
         </div>
         </div>
@@ -148,7 +148,7 @@
         <div class="analysis-cards-row animate-entry">
           <!-- Intent Prediction Card -->
           <div class="panel-card" id="predictionCardContainer">
-            <div class="section-label">Predicted Creator Intent</div>
+            <div class="section-label">Reply intent</div>
             <div class="intent-row">
               <span class="intent-tag-hero intent-pricing" id="readerIntentBadge">PRICING QUERY</span>
               <span class="confidence-score" id="readerConfidence">94% Confidence</span>
@@ -179,7 +179,7 @@
 
           <!-- NEW: AI Emotion & Tone Intelligence Card -->
           <div class="panel-card" id="emotionCardContainer">
-            <div class="section-label">AI Emotion & Tone Profiling</div>
+            <div class="section-label">Tone and urgency</div>
             <div class="intent-row">
               <span class="emotion-badge emotion-enthusiastic" id="readerEmotionBadge">Enthusiastic & Excited</span>
               <span class="confidence-score" id="readerSentimentScore">95% Intensity</span>
@@ -202,7 +202,7 @@
 
           <!-- AI Answer Card -->
           <div class="panel-card">
-            <div class="section-label">AI Answer & Confidence</div>
+            <div class="section-label">Campaign answer</div>
             <div class="intent-row">
               <span class="answer-type-pill" id="readerAnswerType">Pricing Answer</span>
               <span class="confidence-score" id="readerAnswerConfidence">94% Confidence</span>
@@ -221,7 +221,7 @@
 
         <div class="crm-action-strip animate-entry">
           <div>
-            <div class="section-label">Automated CRM Action</div>
+            <div class="section-label">Next action</div>
             <div class="crm-pill" id="readerCrmPill">
               <span>Auto-send rate card PDF and campaign budget tiers ($15k-$35k)</span>
             </div>
@@ -234,17 +234,17 @@
         <!-- Tailored Agency Response Drafting -->
         <div class="llm-card animate-entry">
           <div class="llm-card-header">
-            <div class="section-label" style="margin-bottom: 0;">Tailored Agency Response Draft</div>
+            <div class="section-label" style="margin-bottom: 0;">Reply draft</div>
             <div style="font-size: 11.5px; font-weight: 600; color: #10B981;">
-              Grounded answer inserted into agency-ready response
+              Campaign facts included
             </div>
           </div>
 
-          <textarea class="draft-box" id="readerLlmDraft" placeholder="Tailored agency email/DM response will appear here..."></textarea>
+          <textarea class="draft-box" id="readerLlmDraft" placeholder="Campaign-grounded reply draft appears here..."></textarea>
 
           <div class="llm-footer">
             <div class="llm-reasoning-preview" id="readerLlmReasoning">
-              Context Rationale: Aligned to creator request & campaign deliverables.
+              Decision context: aligned to the creator request and campaign terms.
             </div>
             <div class="btn-group">
               <button class="btn-secondary" id="btnCopyReply">Copy Response</button>
@@ -267,7 +267,7 @@
       <div class="review-summary" id="reviewSummary" aria-live="polite"></div>
       <div class="data-table-container">
         <table class="data-table">
-          <thead><tr><th>Creator</th><th>Reply</th><th>AI Decision</th><th>Confidence</th><th>Review</th></tr></thead>
+          <thead><tr><th>Creator</th><th>Reply</th><th>Suggested intent</th><th>Confidence</th><th>Review</th></tr></thead>
           <tbody id="reviewQueueBody"></tbody>
         </table>
       </div>
@@ -338,7 +338,7 @@ Let me check with my management team and get back to you next week.</textarea>
               <th>Creator Reply Snippet</th>
               <th>Predicted Intent</th>
               <th>Confidence</th>
-              <th>Automated CRM Action</th>
+              <th>Suggested action</th>
             </tr>
           </thead>
           <tbody id="batchResultsTableBody">

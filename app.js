@@ -342,7 +342,7 @@ function renderAiAnswer(answer) {
   const evidenceEl = document.getElementById("readerAnswerEvidence");
   const confidence = Math.round((answer.confidence || 0.72) * 100);
 
-  if (typeEl) typeEl.textContent = answer.question_type || "AI Answer";
+  if (typeEl) typeEl.textContent = answer.question_type || "Campaign answer";
   if (confidenceEl) confidenceEl.textContent = `${confidence}% Confidence`;
   animateMeter(barEl, confidence);
   if (answerEl) answerEl.textContent = answer.answer || "No answer generated.";
@@ -488,10 +488,10 @@ async function refreshEngineStatus() {
     if (!res.ok) throw new Error("health check failed");
     const data = await res.json();
     statusText.textContent = data.ai_provider === "nvidia_nemotron"
-      ? "Nemotron Engine Active"
-      : "Grounded Engine Active";
+      ? "Drafting service ready"
+      : "Grounded replies ready";
   } catch (err) {
-    statusText.textContent = "Offline Demo Mode";
+    statusText.textContent = "Local preview mode";
   }
 }
 
@@ -757,7 +757,7 @@ async function selectCreatorMessage(msgId) {
   const contextualDraft = generateDynamicResponse(msg.text, prediction.intent, msg.handle, camp);
   if (draftEl) draftEl.value = contextualDraft;
   if (reasoningEl) {
-    reasoningEl.textContent = `AI reasoning: answering the creator's ${localAnswer.question_type.toLowerCase()} with campaign facts before drafting the response.`;
+    reasoningEl.textContent = `Decision context: answering the creator's ${localAnswer.question_type.toLowerCase()} with approved campaign facts.`;
   }
 
   // Persisted replies have already been classified and audited by the server.
@@ -801,7 +801,7 @@ async function fetchBackgroundAIAnalysis(messageText, intent, creatorHandle, cam
         draftEl.value = draftReply;
       }
       if (typeof reasoningText === "string" && reasoningText.trim().length > 0 && reasoningEl) {
-        reasoningEl.textContent = `AI response ready (${sourceEngine}): ${reasoningText}`;
+        reasoningEl.textContent = `Draft ready (${sourceEngine}): ${reasoningText}`;
       }
       if (aiAnswer) {
         renderAiAnswer(aiAnswer);
@@ -814,7 +814,7 @@ async function fetchBackgroundAIAnalysis(messageText, intent, creatorHandle, cam
 
   // Ensure high-quality AI rationale is displayed even in local file/offline mode
   if (reasoningEl) {
-    reasoningEl.textContent = `AI response generated (local grounded engine): aligned to creator phrasing and campaign terms (${camp.deliverables}).`;
+    reasoningEl.textContent = `Draft prepared from campaign terms and creator phrasing (${camp.deliverables}).`;
   }
 }
 
@@ -919,7 +919,7 @@ function initEventListeners() {
 
       setDrawerOpen(false);
 
-      showToast("Custom creator reply classified and AI response generated.");
+      showToast("Custom creator reply classified and draft generated.");
     });
   }
 
