@@ -1,14 +1,4 @@
-/**
- * ============================================================================
- * AURA // EXECUTIVE AGENCY CRM COMMAND CENTER CONTROLLER
- * High-Performance Human-Crafted SaaS Controller
- * Interactive Micro-Animations, Accordion Drawer, Contextual Reply Engine
- * ============================================================================
- */
 
-// ============================================================================
-// 1. REAL CAMPAIGN DATA WITH CAMPAIGN SPECIFIC BUDGETS & DELIVERABLES
-// ============================================================================
 const CAMPAIGN_CATALOG = {
   hardware: {
     id: "hardware",
