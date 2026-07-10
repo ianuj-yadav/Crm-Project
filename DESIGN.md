@@ -4,7 +4,7 @@
 
 ## 1. Visual Theme & Atmosphere
 
-AURA is a compact agency operations console with lucid depth: frosted editorial surfaces, human-scale spacing, and crisp neo-brutalist controls. It is intentionally a hybrid, not a collage: glassmorphism is reserved for workspace surfaces, neoclassical contrast comes from type and proportion, while pixel and brutalist influences appear in state markers, borders, and tactile actions.
+AURA is a compact agency operations console with lucid depth: frosted editorial surfaces, human-scale spacing, and a restrained tactile response. It is intentionally a hybrid, not a collage: glassmorphism is reserved for workspace surfaces, neoclassical contrast comes from type and proportion, and visual personality is carried by proportion, material, and confident state design instead of ornament.
 
 ## 2. Color Palette & Roles
 
@@ -27,7 +27,7 @@ AURA is a compact agency operations console with lucid depth: frosted editorial 
 
 ## 4. Component Stylings
 
-- **Buttons:** 2px radius, one strong ink primary action per decision zone, secondary actions as frosted outlined controls; offset shadow and one-pixel lift create a restrained neo-brutalist tactile response.
+- **Buttons:** 6px radius, one strong ink primary action per decision zone, secondary actions as frosted outlined controls; a one-pixel lift creates a tactile response without looking performative.
 - **Cards/Containers:** 8px radius, frosted light surface, translucent cool-gray border, restrained layered shadow; cards never nest inside one another.
 - **Inputs/Forms:** white fill, 1px outline, 7-8px radius, teal focus ring, explicit labels.
 - **Status/Intent:** text labels paired with color; green, gold, blue, red, and neutral signals have distinct semantic meanings.
@@ -42,8 +42,8 @@ AURA is a compact agency operations console with lucid depth: frosted editorial 
 
 When creating new screens:
 
-- **Atmosphere:** "Lucid high-density agency operations console: frosted editorial surfaces, modular typography, and restrained neo-brutalist tactility."
+- **Atmosphere:** "Lucid high-density agency operations console: frosted editorial surfaces, modular typography, and practiced product-design restraint."
 - **Colors:** AURA Ink (`#162036`), Luminous Teal (`#0B8A83`), Fog Canvas (`#E8EEF0`), Signal Gold (`#C88B2C`).
-- **Shape:** 2px controls, 8px surfaces, thin translucent borders, and only purposeful glass.
+- **Shape:** 6px controls, 8px surfaces, thin translucent borders, and only purposeful glass.
 - **Spacing:** compact 4px rhythm with clear separation between unrelated work areas.
 - **Font:** Inter, semibold labels and headings, regular readable body copy.
