@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,14 +7,15 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to workspace</a>
 
   <!-- Top Executive Navigation Header -->
   <header class="app-header">
     <div class="brand-wrapper">
       <div class="brand-logo">A</div>
       <div class="brand-title">
-        <h1>AURA CRM Command Center</h1>
-        <p>Intelligent Reply-Intent Classification & Automated Response Engine</p>
+        <h1>AURA CRM</h1>
+        <p>Creator partnerships operations</p>
       </div>
     </div>
 
@@ -40,6 +41,7 @@
         <span class="status-dot"></span>
         <span id="backendStatusText">Intelligent Engine Active</span>
       </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Dark mode</button>
     </div>
   </header>
 
@@ -80,7 +82,7 @@
       </aside>
 
       <!-- Right Detail Workspace: Analysis, CRM Action & Draft -->
-      <main class="detail-panel">
+      <main class="detail-panel" id="main-content" tabindex="-1">
 
         <!-- Campaign Banner -->
         <div class="campaign-header-card animate-entry">

@@ -404,6 +404,7 @@ function generateDynamicResponse(messageText, intent, creatorHandle, camp) {
 // 5. CLIENT-SIDE CONTROLLER & TAB SWITCHING
 // ============================================================================
 document.addEventListener("DOMContentLoaded", async () => {
+  initThemeToggle();
   refreshEngineStatus();
   initTabSwitching();
   await hydrateInboxFromApi();
@@ -415,6 +416,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   initWorkspaceMotion();
   playViewEntrance(document.getElementById("view-inbox"));
 });
+
+function initThemeToggle() {
+  const toggle = document.getElementById("themeToggle");
+  const storedTheme = localStorage.getItem("aura-theme");
+  const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+  applyTheme(storedTheme || preferredTheme);
+  toggle?.addEventListener("click", () => {
+    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(nextTheme);
+  });
+}
+
+function applyTheme(theme) {
+  const isDark = theme === "dark";
+  const toggle = document.getElementById("themeToggle");
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  localStorage.setItem("aura-theme", isDark ? "dark" : "light");
+
+  if (toggle) {
+    toggle.textContent = isDark ? "Light mode" : "Dark mode";
+    toggle.setAttribute("aria-pressed", String(isDark));
+  }
+}
 
 async function apiRequest(path, options = {}) {
   const response = await fetch(path, { headers: { "Content-Type": "application/json", ...(options.headers || {}) }, ...options });
