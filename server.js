@@ -103,8 +103,23 @@ async function processReply(body, source = 'api') {
   await db.logAudit({ entityType: 'reply', entityId: reply.id, eventType: `${source}_classified`, metadata: { decisionSource: decision.decision_source, needsHumanReview: decision.needs_human_review } });
   return { reply, campaign, decision, classification, generation, action, answer, llm_draft: draft };
 }
+let initPromise = null;
+async function ensureInit() {
+  if (!initPromise) {
+    initPromise = (async () => {
+      try {
+        await runMigrations();
+        await seedDatabase();
+      } catch (error) {
+        console.error('Database initialization warning:', error.message);
+      }
+    })();
+  }
+  await initPromise;
+}
 
-const server = http.createServer(async (req, res) => {
+async function handleRequest(req, res) {
+  await ensureInit();
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = url.pathname;
   if (req.method === 'OPTIONS') return sendJson(res, 204, {});
@@ -200,11 +215,12 @@ const server = http.createServer(async (req, res) => {
     const status = /required|Missing|Invalid|too large/.test(error.message) ? 400 : 500;
     sendJson(res, status, { error: error.message });
   }
-});
+}
+
+const server = http.createServer(handleRequest);
 
 async function start() {
-  await runMigrations();
-  await seedDatabase();
+  await ensureInit();
   server.listen(PORT, () => console.log(`AURA CRM is online at http://localhost:${PORT}`));
 }
 
@@ -215,4 +231,9 @@ if (require.main === module) {
   });
 }
 
-module.exports = { processReply, server, start };
+handleRequest.processReply = processReply;
+handleRequest.server = server;
+handleRequest.start = start;
+handleRequest.handleRequest = handleRequest;
+
+module.exports = handleRequest;

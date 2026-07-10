@@ -63,7 +63,7 @@ Render runs `npm install`, starts the service with `npm start`, then checks `/ap
 
 ## Deploying to Vercel
 
-Vercel detects the root [`server.js`](server.js) entrypoint and runs it as a Node.js server. Import `ianuj-yadav/Crm-Project` in Vercel, select the default branch, and keep the framework preset set to **Other**. No custom build command is needed.
+The repository includes [`vercel.json`](vercel.json) and exports a compatible request handler from [`server.js`](server.js). Import `ianuj-yadav/Crm-Project` in Vercel, select the default branch, and keep the framework preset set to **Other**. No custom build command is needed.
 
 Add these Vercel environment variables before deploying to production:
 
@@ -71,7 +71,7 @@ Add these Vercel environment variables before deploying to production:
 - `PGSSL=true`: enables TLS for the managed database.
 - `NVIDIA_API_KEY`: optional. Without it, the deterministic grounded classifier and draft flow remain available.
 
-The deployed health endpoint is `/api/v1/health`. Vercel deploys the static HTML, CSS, and browser JavaScript alongside the captured Node server, while the server initializes migrations and idempotent seed data on startup.
+The deployed health endpoint is `/api/v1/health`. Vercel routes requests through [`server.js`](server.js), which automatically applies migrations and idempotent seed data on startup.
 
 ## API Highlights
 
