@@ -90,7 +90,7 @@ The deployed health endpoint is `/api/v1/health`. Vercel routes requests through
 npm test
 ```
 
-This regenerates the committed held-out predictions, metrics, and error analysis in `eval_results/`.
+This regenerates the committed held-out predictions, metrics, and error analysis in `eval_results/`
 
 ## Data Retention
 
