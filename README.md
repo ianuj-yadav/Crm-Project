@@ -1,4 +1,4 @@
-# AURA CRM - Reply-Intent Operations Demo
+# AURA CRM - Reply-Intent Operations 
 
 A complete vanilla HTML, CSS, JavaScript, and Node.js prototype for the AI/ML Challenge Option B. It classifies creator replies, records every operational decision in PostgreSQL, drafts campaign-grounded responses, and routes uncertain cases to a human review queue.
 
